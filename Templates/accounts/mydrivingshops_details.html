@@ -127,7 +127,7 @@
 											<a href="{% url 'mydrivingshops' %}" class="btn btn-secondary">Back</a>
 											{% else %}
 											
-												{% if appointment_details.drivers_approval == "denied"  %}
+												{% if appointment_details.drivers_approval == "denied" or appointment_details.drivers_approval == "payout" or appointment_details.drivers_approval == "released"  %}
 													<a href="{% url 'mydrivingshops' %}" class="btn btn-secondary">Back</a>
 													{% else %}
 													<a href="{% url 'approve_driver_appointment' pk=appointment_details.id %}" class="btn btn-danger">Approve</a> <a href="{% url 'denied_driver_appointment' pk=appointment_details.id %}" class="btn btn-dark">Denied</a>

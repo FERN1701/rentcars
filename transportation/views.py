@@ -309,13 +309,65 @@ def admin(request):
     page = 'homedashboard'
     title_page = 'Administrator'
     users = request.user
+    manila_timezone = pytz.timezone("Asia/Manila")
+    yrs = datetime.now(manila_timezone).strftime('%Y')
+    current_time = datetime.now(manila_timezone).strftime('%Y-%m-%d %H:%M:%S')
+    count_cars = Vehicle.objects.all().count()
+    count_users = User.objects.filter(roles=2).count()
+    all_transactions = Rented_Cars.objects.all()
+    revenue = Rented_Cars.objects.filter(yr=yrs, transaction_done=1, excess_exist=0).aggregate(total_share_rates=Sum('share_rates'))   
+    total_revenue = revenue['total_share_rates'] or 0 
+    monthly_counts = Rented_Cars.objects.filter(yr=yrs,transaction_done=1,excess_exist=0).values('mth').annotate(share_rates=Sum('share_rates')).order_by('sqc')
     context = {
         'page':page,
         'title_page':title_page,
         'users':users,
+        'monthly_counts':monthly_counts,
+        'count_cars':count_cars,
+        'count_users':count_users,
+        'total_revenue':total_revenue,
+        'current_time':current_time,
+        'all_transactions':all_transactions,
        
     }
     return render(request, 'accounts/index.html',context)
+
+
+
+
+
+@login_required(login_url='signin')
+@role_required(allowed_roles=['1'], redirect_url='users')
+def rent_details_shop_admin(request,rentid):
+    users = request.user
+    page = 'myslistshop'
+    title_page = 'Shop Details'
+    rate_details = get_object_or_404(rates,pk=1)
+    rate = rate_details.rates
+    drivings = driver_shop.objects.filter(account=users)
+    my_shops = Shops.objects.filter(owner=users)
+    manila_timezone = pytz.timezone("Asia/Manila")
+    current_time = datetime.now(manila_timezone).strftime('%Y-%m-%d %H:%M:%S')
+    current_time_btn = datetime.now(manila_timezone)
+    rent = get_object_or_404(Rented_Cars,rent_id=rentid)
+    slugs = rent.unit_rented.shop_belong.slug
+    proofs = onsitepayment.objects.filter(rent_reference=rent)
+    
+    context = {
+        'page':page,
+        'title_page':title_page,
+        'users':users,
+        'my_shops':my_shops,
+        'shops':shops,
+        'drivings':drivings,
+        'rent':rent,
+        'slugs':slugs,
+        'proofs':proofs,
+        'current_time':current_time,
+        'current_time_btn':current_time_btn,
+        'rate':rate,
+    }
+    return render(request,'accounts/rent_details_shop_admin.html',context)
 
 
 @login_required(login_url='signin')
@@ -824,6 +876,7 @@ def myshop_details(request,slug):
     rented_cars = Rented_Cars.objects.filter(unit_rented__shop_belong__in=my_shops)
     monthly_counts = Rented_Cars.objects.filter(yr=yrs,transaction_done=1,excess_exist=0, unit_rented__shop_belong=shops).values('mth').annotate(total_fare=Sum('total_fare')).order_by('sqc')
     unclaimed_transactions_count = Rented_Cars.objects.filter(unit_rented__shop_belong=shops,status="paid",excess_exist=0,liquidated=0).count
+    payment_request_count = Rented_Cars.objects.filter(unit_rented__shop_belong=shops,drivers_approval="payout").count
     context = {
         'page':page,
         'title_page':title_page,
@@ -839,10 +892,35 @@ def myshop_details(request,slug):
         'monthly_counts':monthly_counts,
         'unclaimed_transactions_count':unclaimed_transactions_count,
         'current_time':current_time,
+        'payment_request_count':payment_request_count
     }
     return render(request,'accounts/myshop_details.html',context)
 
 
+
+
+
+@login_required(login_url='signin')
+@role_required(allowed_roles=['2'], redirect_url='admin')
+def drivers_payout(request,slug):
+    users = request.user
+    page = 'myslistshop'
+    title_page = 'Drivers Payout Request'
+    drivings = driver_shop.objects.filter(account=users)
+    my_shops = Shops.objects.filter(owner=users)
+    shops = get_object_or_404(Shops,slug=slug)
+    list_payout = Rented_Cars.objects.filter(unit_rented__shop_belong=shops,drivers_approval="payout")
+    context = {
+        'page':page,
+        'title_page':title_page,
+        'users':users,
+        'my_shops':my_shops,
+        'shops':shops,
+        'slug':slug,
+        'drivings':drivings,
+        'list_payout':list_payout,
+    }
+    return render(request,'accounts/drivers_payout.html',context)
 
 
 
@@ -1725,6 +1803,17 @@ def payment_paid(request,pk):
     apr.status= "paid"
     apr.save()  
     messages.success(request, "Rent paid succesfully")
+    return redirect('rent_details', rentid=rent_id ) 
+
+
+@login_required(login_url='signin')
+@role_required(allowed_roles=['2'], redirect_url='admin')
+def payment_paid_onsite(request,pk):
+    apr = get_object_or_404(Rented_Cars, pk=pk) 
+    rent_id = apr.rent_id
+    apr.status= "paid"
+    apr.save()  
+    messages.success(request, "Rent paid succesfully")
     return redirect('rent_details_shop', rentid=rent_id ) 
 
 
@@ -1831,6 +1920,27 @@ def online_pay_excess(request,pk):
     messages.success(request, "Excess amount Successfully paid")
     return redirect('rent_details', rentid=rentid) 
 
+
+
+@login_required(login_url='signin')
+@role_required(allowed_roles=['2'], redirect_url='admin')
+def driver_payout_requests(request,pk):
+    apr = get_object_or_404(Rented_Cars, pk=pk) 
+    apr.drivers_approval= "payout"
+    apr.save()  
+    messages.success(request, "Payout Request")
+    return redirect('mydrivingshops') 
+
+
+@login_required(login_url='signin')
+@role_required(allowed_roles=['2'], redirect_url='admin')
+def driver_released_requests(request,pk):
+    apr = get_object_or_404(Rented_Cars, pk=pk) 
+    apr.drivers_approval= "released"
+    slug = apr.unit_rented.shop_belong.slug
+    apr.save()
+    messages.success(request, "Payout Released")
+    return redirect('myshop_details', slug=slug) 
 
 def logoutUser(request):
     user = request.user

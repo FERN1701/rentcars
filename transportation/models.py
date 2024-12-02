@@ -17,7 +17,7 @@ stat = (
     (2, 'Unclock')
 )
 
-
+#primeadmin - primeadmin
 class controls(models.Model):
     '''Model definition for controls.'''
     control = models.IntegerField(choices=stat)
@@ -290,7 +290,7 @@ class Rented_Cars(models.Model):
 
 class onsitepayment(models.Model):
 
-    rent_reference = models.ForeignKey("Rented_Cars", verbose_name=("rent payment"), related_name="rent_payments", on_delete=models.CASCADE)
+    rent_reference = models.ForeignKey("Rented_Cars", verbose_name=("rent payment"), related_name="rent_payments", on_delete=models.SET_NULL, null=True)
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     email = models.EmailField(max_length=254)
@@ -304,7 +304,7 @@ class onsitepayment(models.Model):
 
 
 class payment_process(models.Model):
-    shop_processed = models.ForeignKey("Shops", verbose_name=("Shop Payments"), related_name='shoppayments', on_delete=models.CASCADE)
+    shop_processed = models.ForeignKey("Shops", verbose_name=("Shop Payments"), related_name='shoppayments', on_delete=models.SET_NULL, null=True)
     transaction_reference = models.CharField(max_length=20, unique=True, editable=False, verbose_name="Transacton")
     status = models.CharField(default="uncheck", max_length=50)
     amount = models.IntegerField()
@@ -325,8 +325,8 @@ class payment_process(models.Model):
         return f"TRSTN{random_number}"
 
 class payment_process_items(models.Model):
-    payment_root = models.ForeignKey("payment_process", verbose_name=("root"), on_delete=models.CASCADE)
-    rent_transactions = models.ForeignKey("Rented_Cars", verbose_name=("renttransaction"), on_delete=models.CASCADE)
+    payment_root = models.ForeignKey("payment_process", verbose_name=("root"), on_delete=models.SET_NULL, null=True)
+    rent_transactions = models.ForeignKey("Rented_Cars", verbose_name=("renttransaction"), on_delete=models.SET_NULL, null=True)
     
 
 

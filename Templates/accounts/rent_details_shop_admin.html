@@ -180,9 +180,7 @@
                                                       
                                                     </tbody>
                                                   </table>
-                                                    {% if rent.status == "unpaid" %}
-                                                        <a href="{% url 'payment_paid_onsite' pk=rent.id %}" class="btn btn-danger">Accept Payment</a>
-                                                    {% endif %}
+                                                    
                                                   {% endif %}
                                                   
                                             </div>
@@ -190,54 +188,7 @@
                                         </div>
                                     </div>
 								</div>
-                                <div class="card-footer text-end">
-                                    {% if rent.status == "pending" %}
-                                          {% if rent.driver_shp is not NULL %}
-                                            {% if rent.drivers_approval == "pending" %}
-                                              <a href="" class="btn btn-dark">Waiting for driver's approval</a>
-                                            {% else %}
-                                              <a href="{% url 'unpaid_rente' pk=rent.id %}" class="btn btn-danger">Approved</a>
-                                              <a href="{% url 'denied_rente' pk=rent.id %}" class="btn btn-dark">Denied</a>
-                                            {% endif %}
-                                          {% else %}
-                                            <a href="{% url 'unpaid_rente' pk=rent.id %}" class="btn btn-danger">Approved</a>
-                                              <a href="{% url 'denied_rente' pk=rent.id %}" class="btn btn-dark">Denied</a>
-                                        {% endif %}
-                                        
-                                        
-
-                                        {% elif rent.status == "paid" %}
-                                        {% if rent.unit_release == 1 %}
-                                          {% if rent.transaction_done == 1 %}
-                                              {% if rent.excess_exist == 1 %}
-                                                {% if rent.payment_choice == 2 %}
-                                                  <a href="" class="btn btn-dark">Waiting to renter to pay</a>
-                                                  
-                                                {% else %}
-                                                  <a href="{% url 'excess_cost' pk=rent.id %}" class="btn btn-danger">Excess Payment Done</a>
-                                                {% endif %}
-                                                
-                                                {% elif rent.excess_exist == 2 %}
-                                                <a href="{% url 'refund_cost' pk=rent.id %}" class="btn btn-danger">Refunded Cost</a>
-                                                {% else %}
-                                                <a href="" class="btn btn-dark">Transaction Done</a>
-                                              {% endif %}
-                                            {% else %}
-                                            {% if current_time_btn > rent.pick_up_unit %}
-                                              <a href="{% url 'out_garage' pk=rent.id %}" class="btn btn-danger">Get out garage</a>
-                                            {% else %}
-                                              <a href="" class="btn btn-dark">Wait until {{rent.pick_up_unit}} to pick up</a>
-                                            {% endif %}
-                                            
-                                          {% endif %}
-                                          
-                                        {% elif rent.unit_release == 3 %}
-                                          <a href="{% url 'recieved_garage' pk=rent.id %}" class="btn btn-danger">Recieve Car unit upon returning</a>
-                                        {% endif %}
-                                       
-                                    {% endif %}
-                                        <a href="{% url 'myshop_details' slug=slugs %}" class="btn btn-dark">Back</a>
-                                </div>
+                                
 							</div>
 						</div>
 					</div>

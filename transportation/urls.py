@@ -55,9 +55,13 @@ urlpatterns = [
     path('myshop/payment/submission/<slug:slug>/', views.Submit_payment, name='Submit_payment'),
     path('myshop/payment/transaction/details/<str:tref>/', views.payment_transaction_details, name='payment_transaction_details'),
 
+    path('myshop/drivers/payout/<slug:slug>/', views.drivers_payout, name='drivers_payout'),
+    path('myshop/drivers/released/<int:pk>/', views.driver_released_requests, name='driver_released_requests'),
+
 
 
     path('myshop/rent/<str:rentid>/', views.rent_details_shop, name='rent_details_shop'),
+    path('myshop/rent/admin/<str:rentid>/', views.rent_details_shop_admin, name='rent_details_shop_admin'),
     path('myshop/vehicles/<slug:slug>/', views.vehicles, name='vehicles'),
     path('myshop/<slug:slug>/vehicles/edit/<int:pk>/', views.edit_vehicles, name='edit_vehicles'),
     path('myshop/<slug:slug>/vehicles/delete/<int:pk>/', views.delete_vehicles, name='delete_vehicles'),
@@ -73,6 +77,7 @@ urlpatterns = [
     path('registered/vehicles/', views.registered_vehicles, name='registered_vehicles'),
     path('rent/details/<str:rentid>/', views.rent_details, name='rent_details'),
     path('rent/payment/<int:pk>/paid/', views.payment_paid, name='payment_paid'),
+    path('rent/payment/<int:pk>/paid/onsite/', views.payment_paid_onsite, name='payment_paid_onsite'),
     path('rent/vehicles/<int:pk>/', views.rent_vehicles, name='rent_vehicles'),
     path('rent/vehicles/<int:renteid>/unit/<int:unit>/edit/', views.rent_vehicles_edit, name='rent_vehicles_edit'),
 
@@ -92,6 +97,7 @@ urlpatterns = [
     path('car/rent/refund/<int:pk>/', views.refund_cost, name='refund_cost'),
     path('car/rent/excess/<int:pk>/', views.excess_cost, name='excess_cost'),
     path('car/rent/excess/online/<int:pk>/', views.online_pay_excess, name='online_pay_excess'),
+    path('driver/payout/request/<int:pk>/', views.driver_payout_requests, name='driver_payout_requests'),
     
     
     #path('features/', views.feature_view, name='features'),

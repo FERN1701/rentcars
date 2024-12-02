@@ -115,8 +115,8 @@
 													</div>
 
 													<div class="col-auto">
-														<div class="stat text-primary">
-															<i class="align-middle" data-feather="truck"></i>
+														<div class="stat text-danger" >
+															<i class="fi fi-rr-car-garage"></i>
 														</div>
 													</div>
 												</div>
@@ -135,7 +135,7 @@
 
 													<div class="col-auto">
 														<div class="stat text-primary">
-															<i class="align-middle" data-feather="users"></i>
+															<i class="fi fi-rr-steering-wheel"></i>
 														</div>
 													</div>
 												</div>
@@ -156,7 +156,7 @@
 
 													<div class="col-auto">
 														<div class="stat text-primary">
-															<i class="align-middle" data-feather="coins"></i>
+															<i class="fi fi-rr-coins"></i>
 														</div>
 													</div>
 												</div>
@@ -170,18 +170,18 @@
 											<div class="card-body">
 												<div class="row">
 													<div class="col mt-0">
-														<h5 class="card-title">Registred Drivers</h5>
+														<h5 class="card-title">Driver's Payout Request</h5>
 													</div>
 
 													<div class="col-auto">
 														<div class="stat text-primary">
-															<i class="align-middle" data-feather="users"></i>
+															<i class="fi fi-rr-money-transfer-coin-arrow"></i>
 														</div>
 													</div>
 												</div>
-												<h1 class="">{{count_approve}}</h1>
+												<h1 class="">{{payment_request_count}}</h1>
 												<div class="mb-0">
-													<a href="{% url 'mydrivers' slug=shops.slug %}" class="btn btn-danger">See drivers {% if count_not_approve > 0 %}( applying {{count_not_approve}} ){% endif %}</a>
+													<a href="{% url 'drivers_payout' slug=shops.slug %}" class="btn btn-danger">Details</a>
 												</div>
 											</div>
 										</div>
@@ -316,7 +316,7 @@
 							xAxes: [{
 								reverse: true,
 								gridLines: {
-									color: "rgba(0,0,0,0.0)"
+									color: "red"
 								}
 							}],
 							yAxes: [{

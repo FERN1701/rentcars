@@ -106,7 +106,10 @@
                                                     <td>{{appointment.status}}</td>
                                                     <td>{{appointment.drivers_approval}}</td>
                                                     <td>
-                                                        <a href="{% url 'mydrivingshops_details' pk=appointment.id %}" class="btn btn-danger">view Details</a>
+                                                        {% if appointment.transaction_done == 1 and appointment.drivers_approval == "approved" and appointment.excess_exist == 0 %}
+                                                            <a href="{% url 'driver_payout_requests' pk=appointment.id %}" class="btn btn-sm btn-danger m-1">Payout</a>
+                                                        {% endif %}
+                                                        <a href="{% url 'mydrivingshops_details' pk=appointment.id %}" class="btn btn-sm btn-secondary m-1">Details</a>
                                                     </td>
                                                 </tr>
                                                 {% endfor %}

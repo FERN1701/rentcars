@@ -107,7 +107,7 @@
 											</thead>
 											<tbody>
 												{% for reports in list_transactions %}
-													<tr>
+													<tr class="{% if reports.transaction_type == 2 %}bg-secondary text-light{% endif %}">
 														<td>{{ forloop.counter }}</td>
 														<td>{{reports.transaction_reference}}</td>
 														<td>₱{{ reports.amount|floatformat:2|intcomma }}</td>
