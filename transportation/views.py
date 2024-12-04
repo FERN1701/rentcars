@@ -138,6 +138,9 @@ def home(request):
     return render(request,'public/index.html',context)
 
 def vehicle(request):
+    controlsite = get_object_or_404(controls, pk=1)
+    if controlsite.control == 1:
+        return redirect(controlsite.site)
     vehicle = Vehicle.objects.filter(status="published")
     context = {
         "vehicle":vehicle,
@@ -145,11 +148,17 @@ def vehicle(request):
     return render(request,'public/vehicle.html',context)
 
 def drivers(request):
+    controlsite = get_object_or_404(controls, pk=1)
+    if controlsite.control == 1:
+        return redirect(controlsite.site)
     context = {
     }
     return render(request,'public/drivers.html',context)
 
 def car_details(request, pk):
+    controlsite = get_object_or_404(controls, pk=1)
+    if controlsite.control == 1:
+        return redirect(controlsite.site)
     vehicle_details = get_object_or_404(Vehicle,pk=pk)
     shop = vehicle_details.shop_belong.id
     shop_details = get_object_or_404(Shops,pk=shop)
@@ -163,12 +172,18 @@ def car_details(request, pk):
     return render(request,'public/car_details.html',context)
 
 def driver_details(request):
+    controlsite = get_object_or_404(controls, pk=1)
+    if controlsite.control == 1:
+        return redirect(controlsite.site)
     context = {
     }
     return render(request,'public/driver_details.html',context)
 
 
 def shop(request):
+    controlsite = get_object_or_404(controls, pk=1)
+    if controlsite.control == 1:
+        return redirect(controlsite.site)
     shop = Shops.objects.filter(status="published")
     context = {
         'shop':shop,
@@ -177,6 +192,9 @@ def shop(request):
     return render(request,'public/shop.html',context)
 
 def shop_details(request,slug):
+    controlsite = get_object_or_404(controls, pk=1)
+    if controlsite.control == 1:
+        return redirect(controlsite.site)
     shop_details = get_object_or_404(Shops,slug=slug)
     shop_cars = Vehicle.objects.filter(shop_belong=shop_details,status="published")
     shop_cars_count = Vehicle.objects.filter(shop_belong=shop_details,status="published").count()
@@ -196,6 +214,9 @@ def shop_details(request,slug):
 
 
 def contacts(request):
+    controlsite = get_object_or_404(controls, pk=1)
+    if controlsite.control == 1:
+        return redirect(controlsite.site)
     context = {
         
     }
@@ -203,6 +224,9 @@ def contacts(request):
 
 
 def createaacount(request):
+    controlsite = get_object_or_404(controls, pk=1)
+    if controlsite.control == 1:
+        return redirect(controlsite.site)
     form = MyUserCreationForm()
     if request.method == 'POST':
         form = MyUserCreationForm(request.POST)
@@ -235,6 +259,9 @@ def createaacount(request):
 
 
 def verify_email(request):
+    controlsite = get_object_or_404(controls, pk=1)
+    if controlsite.control == 1:
+        return redirect(controlsite.site)
     if request.method == 'POST':
         otp = request.POST.get("otp")
         email = request.session['unverified_email']
@@ -271,6 +298,9 @@ def verify_email(request):
 
 
 def signin(request):
+    controlsite = get_object_or_404(controls, pk=1)
+    if controlsite.control == 1:
+        return redirect(controlsite.site)
     page = 'login'
     if request.user.is_authenticated:
         
@@ -322,6 +352,9 @@ def signin(request):
 @login_required(login_url='signin')
 @role_required(allowed_roles=['1'], redirect_url='users')
 def admin(request):
+    controlsite = get_object_or_404(controls, pk=1)
+    if controlsite.control == 1:
+        return redirect(controlsite.site)
     page = 'homedashboard'
     title_page = 'Administrator'
     users = request.user
@@ -676,6 +709,9 @@ def published_cars(request, pk):
 @login_required(login_url='signin')
 @role_required(allowed_roles=['2'], redirect_url='admin')
 def users(request):
+    controlsite = get_object_or_404(controls, pk=1)
+    if controlsite.control == 1:
+        return redirect(controlsite.site)
     users = request.user
     page = 'homedashboard'
     title_page = 'Prime Cars'
