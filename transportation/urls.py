@@ -30,7 +30,7 @@ urlpatterns = [
     path('list/users/', views.list_users, name='list_users'),
     path('list/users/details/<int:pk>', views.user_details, name='user_details'),
     path('shops/', views.shops, name='shops'),
-    path('shops/details/<int:pk>', views.shops_details, name='shops_details'),
+    path('shops/details/<int:pk>/', views.shops_details, name='shops_details'),
     path('shops/<int:pk>/', views.unlock_shops, name='unlock_shops'),
     path('published/cars/<int:pk>/', views.published_cars, name='published_cars'),
     path('vehicles/', views.vehicles_list, name='vehicles_list'),
@@ -98,6 +98,7 @@ urlpatterns = [
     path('car/rent/excess/<int:pk>/', views.excess_cost, name='excess_cost'),
     path('car/rent/excess/online/<int:pk>/', views.online_pay_excess, name='online_pay_excess'),
     path('driver/payout/request/<int:pk>/', views.driver_payout_requests, name='driver_payout_requests'),
+    path('review/status/<int:pk>/', views.review_status, name='review_status'),
     
     
     #path('features/', views.feature_view, name='features'),

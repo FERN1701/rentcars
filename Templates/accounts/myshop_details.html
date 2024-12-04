@@ -277,7 +277,7 @@
 														<td>{{Reviews.rating_reviews}}</td>
 														
 														<td>
-															<a href="" class="btn btn-sm btn-danger">{% if Reviews.rating_bolean == 2 %}Hide{% elif Reviews.rating_bolean == 3 %}Published{% endif %}</a>
+															<a href="{% url 'review_status' pk=Reviews.id %}" class="btn btn-sm btn-danger">{% if Reviews.rating_bolean == 1 %}Hide{% elif Reviews.rating_bolean == 2  %}Published{% endif %}</a>
 															
 														</td>
 													</tr>

@@ -452,7 +452,7 @@ def list_users(request):
     page = 'userlist'
     title_page = 'User list'
     users = request.user
-    admins = User.objects.filter(roles='2')
+    admins = User.objects.filter(roles='2',is_staff="0")
     context = {
         'page':page,
         'title_page':title_page,
@@ -890,7 +890,7 @@ def myshop_details(request,slug):
     drivers_list = driver_shop.objects.filter(shop_under=shops,status=1)
     count_approve = driver_shop.objects.filter(shop_under=shops,status=1).count()
     rented_cars = Rented_Cars.objects.filter(unit_rented__shop_belong__in=my_shops)
-    rented_cars_reviews = Rented_Cars.objects.filter(unit_rented__shop_belong__in=my_shops,rating_bolean__in=[2,3])
+    rented_cars_reviews = Rented_Cars.objects.filter(unit_rented__shop_belong__in=my_shops,rating_bolean__in=[1,2])
     monthly_counts = Rented_Cars.objects.filter(yr=yrs,transaction_done=1,excess_exist=0, unit_rented__shop_belong=shops).values('mth').annotate(total_fare=Sum('total_fare')).order_by('sqc')
     unclaimed_transactions_count = Rented_Cars.objects.filter(unit_rented__shop_belong=shops,status="paid",excess_exist=0,liquidated=0).count
     payment_request_count = Rented_Cars.objects.filter(unit_rented__shop_belong=shops,drivers_approval="payout").count
@@ -1973,6 +1973,20 @@ def driver_released_requests(request,pk):
     slug = apr.unit_rented.shop_belong.slug
     apr.save()
     messages.success(request, "Payout Released")
+    return redirect('myshop_details', slug=slug) 
+
+
+@login_required(login_url='signin')
+@role_required(allowed_roles=['2'], redirect_url='admin')
+def review_status(request,pk):
+    apr = get_object_or_404(Rented_Cars, pk=pk) 
+    if apr.rating_bolean == 1:
+        apr.rating_bolean = 2
+    else:
+        apr.rating_bolean = 1
+    slug = apr.unit_rented.shop_belong.slug
+    apr.save()
+    messages.success(request, "Review Status Updated")
     return redirect('myshop_details', slug=slug) 
 
 def logoutUser(request):
