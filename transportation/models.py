@@ -48,7 +48,7 @@ class User(AbstractUser):
     code = models.IntegerField(blank=True, null=True)  # Allow blank and null values
     status = models.CharField(default="notverified", max_length=50)
     lock = models.CharField(max_length=50, default='none')
-    USERNAME_FIELD = 'email'
+    USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = []
 
 
