@@ -126,8 +126,12 @@ class rates_form(ModelForm):
             'rates': forms.NumberInput(attrs={'class': 'form-control'}),
 }
         
-
-
-
-
+class ratings_review_form(ModelForm):
+    class Meta:
+        model = Rented_Cars
+        fields = ['rating_star','rating_reviews']
+        widgets = {
+            'rating_star': forms.Select(attrs={'class': 'form-control'}),
+            'rating_reviews': forms.Textarea(attrs={'class': 'form-control'}),
+}
 

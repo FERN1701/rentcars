@@ -1,5 +1,6 @@
 {% extends 'public/base.html' %}
 {% load static %}
+{% load humanize %}
 
 {% block content %}
 <style>
@@ -44,17 +45,16 @@
             <div class="row g-4 wow fadeInUp" data-wow-delay="0.3s">
                 <div class="row">
                     <div class="col-sm-8 col-lg-12 mb-3">
-                        <div class="card glass-effect" style="background-image: url({% static 'public/img/carousel-bg-2.jpg' %});">
+                        <div class="card glass-effect" style="background-image: url({{shop_details.banner.url}});">
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-sm-4">
-                                        <img src="https://wieck-honda-production.s3.amazonaws.com/photos/d33379bfd9aa208d0232638a05dae7da8305158b/preview-928x522.jpg" alt="" class="img-fluid">
+                                        <img src="{{shop_details.logo.url}}" alt="" class="img-fluid">
                                     </div>
                                     <div class="col-sm-8">
-                                        <h2>Microhard Corp</h2>
-                                        <h5><a href="tel:+09785678989" class="text-secondary">09785678989</a></h5>
-                                        <h5><a href="mail:microhard@gmail.com" class="text-secondary">microhard@gmail.com</a></h5>
-                                        <h5>123 Street, New York, USA</h5>
+                                        <h2>{{shop_details.shop_name}}</h2>
+                                        <h5><a href="tel:0{{shop_details.contact}}" class="text-secondary">0{{shop_details.contact}}</a></h5>
+                                        <h5><a href="mail:{{shop_details.email}}" class="text-secondary">{{shop_details.email}}</a></h5>
                                     </div>
                                 </div>
                             </div>
@@ -66,12 +66,12 @@
                                 <div class="row">
                                     <div class="col-6 col-lg-3">
                                         <div class="d-flex">
-                                            <i class="fi fi-rr-steering-wheel me-2"></i> <h6 class=""> Cars : 88</h6>
+                                            <i class="fi fi-rr-steering-wheel me-2"></i> <h6 class=""> {{shop_cars_count}} Cars</h6>
                                         </div>
                                     </div>
                                     <div class="col-6 col-lg-3" data-bs-toggle="modal" data-bs-target="#driversmodal">
                                         <div class="d-flex">
-                                            <i class="fi fi-rr-steering-wheel me-2"></i> <h6 class=""> Drivers : 88</h6>
+                                            <i class="fi fi-rr-steering-wheel me-2"></i> <h6 class=""> {{shop_driver_count}} Shop drivers</h6>
                                         </div>
                                     </div>
                                     <div class="col-6 col-lg-3">
@@ -81,7 +81,7 @@
                                     </div>
                                     <div class="col-6 col-lg-3">
                                         <div class="d-flex">
-                                            <i class="fi fi-rr-category-alt me-2"></i> <h6 class=""> Categories : 18</h6>
+                                            <i class="fi fi-rr-marker me-2"></i> <h6 class="">{{shop_details.address}}</h6>
                                         </div>
                                     </div>
                                 </div>
@@ -102,70 +102,25 @@
                                 </div>
                                 <div class="modal-body">
                                     <div class="row">
-
+                                        {% for drivers in shop_driver %}
                                         <div class="col-sm-4 mb-3">
                                             <div class="card">
                                                 <div class="card-body">
                                                     <div class="row">
                                                         <div class="col-sm-4">
-                                                            <img src="{% static 'public/img/courier.png' %}" alt="" class="img-fluid">
+                                                            <img src="{{drivers.account.avatar.url}}" alt="" class="img-fluid">
                                                         </div>
                                                         <div class="col-sm-8">
                                                             <div class="d-flex justify-content-between">
-                                                                <h6>Jhone Doer</h6> <h6><a href="tel:+09432678988">09432678988</a></h6>
+                                                                <h6>{{drivers.account.fname}} {{drivers.account.lname}}</h6> <h6><a href="tel:+0{{drivers.account.contact}}">0{{drivers.account.contact}}</a></h6>
                                                             </div>
-                                                            <h6>Microhard tranpo</h6>
-                                                            <div class="d-flex">
-                                                                <i class="fi fi-rr-star text-primary m-1"></i><i class="fi fi-rr-star text-primary m-1"></i><i class="fi fi-rr-star text-primary m-1"></i><i class="fi fi-rr-star text-primary m-1"></i><i class="fi fi-rr-star text-primary m-1"></i>
-                                                            </div>
-                                                           <a href="{% url 'driver_details' %}" class="btn btn-sm btn-primary">View Driver</a>
+                                                           <p>Rate: ₱{{ drivers.drivers_rate|floatformat:2|intcomma }}/hr</p>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-sm-4 mb-3">
-                                            <div class="card">
-                                                <div class="card-body">
-                                                    <div class="row">
-                                                        <div class="col-sm-4">
-                                                            <img src="{% static 'public/img/courier.png' %}" alt="" class="img-fluid">
-                                                        </div>
-                                                        <div class="col-sm-8">
-                                                            <div class="d-flex justify-content-between">
-                                                                <h6>Jhone Doer</h6> <h6><a href="tel:+09432678988">09432678988</a></h6>
-                                                            </div>
-                                                            <h6>Microhard tranpo</h6>
-                                                            <div class="d-flex">
-                                                                <i class="fi fi-rr-star text-primary m-1"></i><i class="fi fi-rr-star text-primary m-1"></i><i class="fi fi-rr-star text-primary m-1"></i><i class="fi fi-rr-star text-primary m-1"></i><i class="fi fi-rr-star text-primary m-1"></i>
-                                                            </div>
-                                                           <a href="{% url 'driver_details' %}" class="btn btn-sm btn-primary">View Driver</a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-4 mb-3">
-                                            <div class="card">
-                                                <div class="card-body">
-                                                    <div class="row">
-                                                        <div class="col-sm-4">
-                                                            <img src="{% static 'public/img/courier.png' %}" alt="" class="img-fluid">
-                                                        </div>
-                                                        <div class="col-sm-8">
-                                                            <div class="d-flex justify-content-between">
-                                                                <h6>Jhone Doer</h6> <h6><a href="tel:+09432678988">09432678988</a></h6>
-                                                            </div>
-                                                            <h6>Microhard tranpo</h6>
-                                                            <div class="d-flex">
-                                                                <i class="fi fi-rr-star text-primary m-1"></i><i class="fi fi-rr-star text-primary m-1"></i><i class="fi fi-rr-star text-primary m-1"></i><i class="fi fi-rr-star text-primary m-1"></i><i class="fi fi-rr-star text-primary m-1"></i>
-                                                            </div>
-                                                           <a href="{% url 'driver_details' %}" class="btn btn-sm btn-primary">View Driver</a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+                                        {% endfor %}
 
                                     </div>
                                 </div>
@@ -179,145 +134,63 @@
 
 
                 <div class="row">
-                    <div class="col-sm-8">
-                        <div class="row">
-                            <div class="mt-3"></div>
-                                <div class="col-sm-6 mb-3">
-                                    <div class="card">
-                                        <div class="card-body">
-                                            <div class="row">
-                                                <div class="col-sm-4">
-                                                    <img src="https://s1.cdn.autoevolution.com/images/news/honda-civic-type-r-gets-a-sedan-version-thanks-to-rendering-artist-theottle-195286_1.jpg" alt="" class="img-fluid">
-                                                </div>
-                                                <div class="col-sm-8">
-                                                    <div class="d-flex">
-                                                        <h3>Honda Civic Type R Sedan</h3>
-                                                    </div>
-                                                    <div class="d-flex">
-                                                        <i class="fi fi-rr-star text-primary m-1"></i><i class="fi fi-rr-star text-primary m-1"></i><i class="fi fi-rr-star text-primary m-1"></i><i class="fi fi-rr-star text-primary m-1"></i><i class="fi fi-rr-star text-primary m-1"></i>
-                                                    </div>
-                                                <a href="{% url 'shop_details' %}" class="btn btn-sm btn-primary">View Shop</a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-sm-6 mb-3">
-                                    <div class="card">
-                                        <div class="card-body">
-                                            <div class="row">
-                                                <div class="col-sm-4">
-                                                    <img src="https://s1.cdn.autoevolution.com/images/news/honda-civic-type-r-gets-a-sedan-version-thanks-to-rendering-artist-theottle-195286_1.jpg" alt="" class="img-fluid">
-                                                </div>
-                                                <div class="col-sm-8">
-                                                    <div class="d-flex">
-                                                        <h3>Honda Civic Type R Sedan</h3>
-                                                    </div>
-                                                    <div class="d-flex">
-                                                        <i class="fi fi-rr-star text-primary m-1"></i><i class="fi fi-rr-star text-primary m-1"></i><i class="fi fi-rr-star text-primary m-1"></i><i class="fi fi-rr-star text-primary m-1"></i><i class="fi fi-rr-star text-primary m-1"></i>
-                                                    </div>
-                                                <a href="{% url 'shop_details' %}" class="btn btn-sm btn-primary">View Shop</a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-sm-6 mb-3">
-                                    <div class="card">
-                                        <div class="card-body">
-                                            <div class="row">
-                                                <div class="col-sm-4">
-                                                    <img src="https://s1.cdn.autoevolution.com/images/news/honda-civic-type-r-gets-a-sedan-version-thanks-to-rendering-artist-theottle-195286_1.jpg" alt="" class="img-fluid">
-                                                </div>
-                                                <div class="col-sm-8">
-                                                    <div class="d-flex">
-                                                        <h3>Honda Civic Type R Sedan</h3>
-                                                    </div>
-                                                    <div class="d-flex">
-                                                        <i class="fi fi-rr-star text-primary m-1"></i><i class="fi fi-rr-star text-primary m-1"></i><i class="fi fi-rr-star text-primary m-1"></i><i class="fi fi-rr-star text-primary m-1"></i><i class="fi fi-rr-star text-primary m-1"></i>
-                                                    </div>
-                                                <a href="{% url 'shop_details' %}" class="btn btn-sm btn-primary">View Shop</a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-sm-6 mb-3">
-                                    <div class="card">
-                                        <div class="card-body">
-                                            <div class="row">
-                                                <div class="col-sm-4">
-                                                    <img src="https://s1.cdn.autoevolution.com/images/news/honda-civic-type-r-gets-a-sedan-version-thanks-to-rendering-artist-theottle-195286_1.jpg" alt="" class="img-fluid">
-                                                </div>
-                                                <div class="col-sm-8">
-                                                    <div class="d-flex">
-                                                        <h3>Honda Civic Type R Sedan</h3>
-                                                    </div>
-                                                    <div class="d-flex">
-                                                        <i class="fi fi-rr-star text-primary m-1"></i><i class="fi fi-rr-star text-primary m-1"></i><i class="fi fi-rr-star text-primary m-1"></i><i class="fi fi-rr-star text-primary m-1"></i><i class="fi fi-rr-star text-primary m-1"></i>
-                                                    </div>
-                                                <a href="{% url 'shop_details' %}" class="btn btn-sm btn-primary">View Shop</a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="d-flex justify-content-center">
-                                    <nav aria-label="...">
-                                        <ul class="pagination">
-                                          <li class="page-item disabled">
-                                            <span class="page-link">Previous</span>
-                                          </li>
-                                          <li class="page-item"><a class="page-link" href="#">1</a></li>
-                                          <li class="page-item active" aria-current="page">
-                                            <span class="page-link">2</span>
-                                          </li>
-                                          <li class="page-item"><a class="page-link" href="#">3</a></li>
-                                          <li class="page-item">
-                                            <a class="page-link" href="#">Next</a>
-                                          </li>
-                                        </ul>
-                                      </nav>
-                                </div>
-                        </div>
-                    </div>
                     <div class="col-sm-4">
                         <div class="card mt-3">
+                            <div class="card-header">
+                                <h6>Shop Location</h6>
+                            </div>
                             <div class="card-body">
-                                <div class="table-responsive">
-                                        <table class="table">
-                                            <thead>
-                                            <tr>
-                                                <th scope="col">Car categories</th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td>Honda</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Honda</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Honda</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Honda</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Honda</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Honda</td>
-                                                </tr>
-                                                
-                                            </tbody>
-                                        </table>
-                                </div>
+                                <div id="map" style="height:300px;"></div>
                             </div>
                         </div>
                     </div>
+                    <div class="col-sm-8">
+                        <div class="row">
+                            <div class="mt-3"></div>
+                                {% for cars in cars_objects %}
+                                    <div class="col-sm-6 mb-3">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-sm-4">
+                                                        <img src="{{cars.img1.url}}" alt="" class="img-fluid">
+                                                    </div>
+                                                    <div class="col-sm-8">
+                                                        <div class="d-flex">
+                                                            <h3>Honda Civic Type R Sedan</h3>
+                                                        </div>
+                                                        
+                                                    <a href="{% url 'car_details' pk=cars.id %}" class="btn btn-sm btn-primary">View Car details</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+
+
+                                <div class="d-flex justify-content-center">
+                                    <nav aria-label="...">
+                                        <ul class="pagination">
+                                          {% if cars_objects.has_previous %}
+														<a href="?cars=1" class="btn btn-outline-danger">&laquo; first</a>
+														<a href="?cars={{ cars_objects.previous_page_number }}" class="btn btn-outline-danger">previous</a>
+													{% endif %}
+												
+													<span class="btn btn-danger current">
+														cars {{ cars_objects.number }} of {{ cars_objects.paginator.num_pages }}.
+													</span>
+												
+													{% if cars_objects.has_next %}
+														<a href="?cars={{ cars_objects.next_page_number }}" class="btn btn-outline-danger">next</a>
+														<a href="?cars={{ cars_objects.paginator.num_pages }}" class="btn btn-outline-danger">last &raquo;</a>
+													{% endif %}
+                                        </ul>
+                                      </nav>
+                                </div>
+                            </div>
+                    </div>
+                   
                 </div>
             </div>
         </div>
@@ -325,5 +198,21 @@
     <!-- Service End -->
 
 
-    
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+            <script>
+                // Initialize the map and set its view
+                var map = L.map('map').setView([{{shop_details.latitude}},{{shop_details.longitude}}], 16); // Default: Manila coordinates
+                
+                
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19
+                }).addTo(map);
+            
+                var marker = L.marker([{{shop_details.latitude}},{{shop_details.longitude}}], {draggable: false}).addTo(map);
+                
+            
+                
+               
+            </script>
     {% endblock content %}

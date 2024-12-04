@@ -248,7 +248,49 @@
 									
 								</div>
 							</div>
+							
 						</div>
+
+
+						<div class="col-sm-12 d-flex order-3 order-xxl-2">
+							<div class="card flex-fill w-100">
+								<div class="card-body px-4">
+									<h2>Ratings</h2>
+									<div class="table-responsive">
+                                        <table id="mydata" class="display" style="width:100%">
+                                            <thead>
+                                                <tr>
+                                                    <th>Rates</th>
+                                                    <th>rent ID</th>
+                                                    <th>Reviewer</th>
+													<th>Review Statement</th>
+													<th>Actions</th>
+													
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+												{% for Reviews in rented_cars_reviews %}
+													<tr class="">
+														<td>{{Reviews.rating_star}} Stars</td>
+														<td>{{Reviews.rent_id}}</td>
+														<td>{{Reviews.renters.fname}} {{Reviews.renters.lname}}</td>
+														<td>{{Reviews.rating_reviews}}</td>
+														
+														<td>
+															<a href="" class="btn btn-sm btn-danger">{% if Reviews.rating_bolean == 2 %}Hide{% elif Reviews.rating_bolean == 3 %}Published{% endif %}</a>
+															
+														</td>
+													</tr>
+												{% endfor %}                    
+                                            </tbody>                     
+                                        </table>
+                                    </div>
+									
+								</div>
+							</div>
+							
+						</div>
+						
 						
 					</div>
 					<!-- Modal -->

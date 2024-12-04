@@ -153,10 +153,12 @@ def car_details(request, pk):
     vehicle_details = get_object_or_404(Vehicle,pk=pk)
     shop = vehicle_details.shop_belong.id
     shop_details = get_object_or_404(Shops,pk=shop)
+    reviews = Rented_Cars.objects.filter(unit_rented=vehicle_details,rating_bolean=2)
     
     context = {
         "vehicle_details":vehicle_details,
         "shop_details":shop_details,
+        "reviews":reviews,
     }
     return render(request,'public/car_details.html',context)
 
@@ -167,14 +169,28 @@ def driver_details(request):
 
 
 def shop(request):
+    shop = Shops.objects.filter(status="published")
     context = {
+        'shop':shop,
         
     }
     return render(request,'public/shop.html',context)
 
-def shop_details(request):
+def shop_details(request,slug):
+    shop_details = get_object_or_404(Shops,slug=slug)
+    shop_cars = Vehicle.objects.filter(shop_belong=shop_details,status="published")
+    shop_cars_count = Vehicle.objects.filter(shop_belong=shop_details,status="published").count()
+    shop_driver = driver_shop.objects.filter(shop_under=shop_details,status=1)
+    shop_driver_count = driver_shop.objects.filter(shop_under=shop_details,status=1).count()
+    page_cars = Paginator(shop_cars, 6)  
+    page_number = request.GET.get("cars")
+    cars_objects = page_cars.get_page(page_number)
     context = {
-        
+        'cars_objects':cars_objects,
+        'shop_details':shop_details,
+        'shop_cars_count':shop_cars_count,
+        'shop_driver':shop_driver,
+        'shop_driver_count':shop_driver_count,
     }
     return render(request,'public/shop_details.html',context)
 
@@ -874,6 +890,7 @@ def myshop_details(request,slug):
     drivers_list = driver_shop.objects.filter(shop_under=shops,status=1)
     count_approve = driver_shop.objects.filter(shop_under=shops,status=1).count()
     rented_cars = Rented_Cars.objects.filter(unit_rented__shop_belong__in=my_shops)
+    rented_cars_reviews = Rented_Cars.objects.filter(unit_rented__shop_belong__in=my_shops,rating_bolean__in=[2,3])
     monthly_counts = Rented_Cars.objects.filter(yr=yrs,transaction_done=1,excess_exist=0, unit_rented__shop_belong=shops).values('mth').annotate(total_fare=Sum('total_fare')).order_by('sqc')
     unclaimed_transactions_count = Rented_Cars.objects.filter(unit_rented__shop_belong=shops,status="paid",excess_exist=0,liquidated=0).count
     payment_request_count = Rented_Cars.objects.filter(unit_rented__shop_belong=shops,drivers_approval="payout").count
@@ -892,7 +909,8 @@ def myshop_details(request,slug):
         'monthly_counts':monthly_counts,
         'unclaimed_transactions_count':unclaimed_transactions_count,
         'current_time':current_time,
-        'payment_request_count':payment_request_count
+        'payment_request_count':payment_request_count,
+        'rented_cars_reviews':rented_cars_reviews,
     }
     return render(request,'accounts/myshop_details.html',context)
 
@@ -1349,6 +1367,7 @@ def shop_unit(request, slug , pk):
     my_shops = Shops.objects.filter(owner=users)
     details_shop = get_object_or_404(Shops,slug=slug)
     check_car = Rented_Cars.objects.filter(unit_rented=cars, status__in=["approved", "paid", "unpaid"] ).exclude(unit_release=1)
+    ratings = Rented_Cars.objects.filter(unit_rented=cars, rating_bolean__in=[2,3])
     context = {
         'page':page,
         'title_page':title_page,
@@ -1359,6 +1378,7 @@ def shop_unit(request, slug , pk):
         'slug':slug,
         'cars':cars,
         'check_car':check_car,
+        'ratings':ratings,
     }
     return render(request, 'accounts/shopunit.html',context)
 
@@ -1773,11 +1793,21 @@ def rent_details(request,rentid):
             pay.save()  # Now save to the database
             messages.success(request, "Save proof of payments")
             return redirect('rent_details', rentid=rentid)
+        rev = ratings_review_form(request.POST, request.FILES, instance=cars )
+        if rev.is_valid():
+            rv = rev.save(commit=False) 
+            rv.rating_bolean = 2
+            rv.save()
+            messages.success(request, "Rated Succefully")
+            return redirect('rent_details', rentid=rentid)
         else:
             print(form.errors)  # Debug form errors
             messages.error(request, "Please Try Again")
     else:
         form = onsite_pay()
+        rev = ratings_review_form(instance=cars)
+
+    
     context = {
         'page':page,
         'title_page':title_page,
@@ -1788,6 +1818,8 @@ def rent_details(request,rentid):
         'drivings':drivings,
         'form':form,
         'proofs':proofs,
+        'rev':rev,
+        'stars': range(cars.rating_star) 
     }
     return render(request, 'accounts/rent_details.html',context)
 
@@ -1874,6 +1906,7 @@ def recieved_garage(request, pk):
     apr.execes_amount = additional
     apr.return_garage = current_time
     apr.unit_release = 1
+    apr.rating_bolean = 1
     apr.transaction_done = 1
     apr.save()
     messages.success(request, "Returning Successfully")

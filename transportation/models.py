@@ -239,6 +239,15 @@ garage = (
     (2, 'Outside'),
     (3, 'Return Garage'),
 )
+
+rate_num = (
+    (1, 'one star'),
+    (2, 'two star'),
+    (3, 'three star'),
+    (4, 'four star'),
+    (5, 'five star'),
+)
+
 class Rented_Cars(models.Model):
     renters = models.ForeignKey("User", verbose_name=("renters"), related_name="renters_driver", on_delete=models.CASCADE)
     unit_rented = models.ForeignKey("Vehicle", verbose_name=("Unit Rented"),related_name="unitrented", on_delete=models.CASCADE)
@@ -270,6 +279,10 @@ class Rented_Cars(models.Model):
     share_rates = models.IntegerField(default=0)
     #liquidated
     liquidated = models.IntegerField(default=0)
+    #rating
+    rating_bolean = models.IntegerField(default=0)
+    rating_star = models.IntegerField(default=0,choices=rate_num)
+    rating_reviews = models.TextField(null=True)
 
     def save(self, *args, **kwargs):
         # Generate a unique RENTID if not already set

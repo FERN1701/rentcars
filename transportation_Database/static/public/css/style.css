@@ -179,12 +179,14 @@
 }
 
 .page-header {
+    
     background-position: center center;
     background-repeat: no-repeat;
     background-size: cover;
 }
 
 .page-header-inner {
+    background: linear-gradient(rgba(0, 0, 0, .7), rgba(0, 0, 0, .7)), url(../img/banner1.png);
     background: rgba(0, 0, 0, .7);
 }
 
@@ -195,7 +197,7 @@
 
 /*** Facts ***/
 .fact {
-    background: linear-gradient(rgba(0, 0, 0, .7), rgba(0, 0, 0, .7)), url(../img/carousel-bg-1.jpg);
+    background: linear-gradient(rgba(0, 0, 0, .7), rgba(0, 0, 0, .7)), url(../img/banner1.png);
     background-position: center center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -219,7 +221,7 @@
 
 /*** Booking ***/
 .booking {
-    background: linear-gradient(rgba(0, 0, 0, .7), rgba(0, 0, 0, .7)), url(../img/carousel-bg-2.jpg) center center no-repeat;
+    background: linear-gradient(rgba(0, 0, 0, .7), rgba(0, 0, 0, .7)), url(../img/banner1.png) center center no-repeat;
     background-size: cover;
 }
 
@@ -314,7 +316,7 @@
 
 /*** Footer ***/
 .footer {
-    background: linear-gradient(rgba(0, 0, 0, .9), rgba(0, 0, 0, .9)), url(../img/carousel-bg-1.jpg) center center no-repeat;
+    background: linear-gradient(rgba(0, 0, 0, .9), rgba(0, 0, 0, .9)), url(../img/banner1.png) center center no-repeat;
     background-size: cover;
 }
 

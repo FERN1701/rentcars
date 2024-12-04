@@ -42,7 +42,7 @@
                         </button>
                     </div>
                 </div>
-                <div class="col-sm-6">
+                <div class="col-sm-6 mb-3">
                     <div class="table-responsive">
                         <table class="table">
                             <thead>
@@ -72,7 +72,7 @@
                             </tbody>
                           </table>
                     </div>
-                    <div class="table-responsive">
+                    <div class="table-responsive mb-3">
                         <table class="table">
                             <thead>
                               <tr>
@@ -88,7 +88,7 @@
                                 <td>{{shop_details.contact}}</td>
                               </tr>
                               <tr>
-                                <td>{{shop_details.address}}</td>
+                                <td colspan="3">{{shop_details.address}}</td>
                                 
                               </tr>
                               
@@ -97,9 +97,36 @@
                           </table>
                     </div>
                     <div class="col-sm-4">
-                        <a href="" class="btn btn-sm btn-primary">Book Now</a> <a href="" class="btn btn-sm btn-primary">View Shop</a> 
+                        <a href="{% url 'signin' %}" class="btn btn-sm btn-primary">Book Now</a> <a href="{% url 'shop_details' slug=shop_details.slug %}" class="btn btn-sm btn-primary">View Shop</a> 
                     </div>
                 </div>
+                <div class="col-sm-12">
+
+                  {% if reviews %}
+                  <div class="d-flex m-3">
+                      <h3 class="">Client reviews</h3> 
+                  </div>
+                  
+                  <div class="owl-carousel testimonial-carousel position-relative">
+                    
+                    {% for review in reviews %}
+                      <div class="testimonial-item text-center">
+                        <img class="bg-light rounded-circle p-2 mx-auto mb-3" src="{{review.renters.avatar.url}}" style="width: 80px; height: 80px;">
+                        <h5 class="mb-0">{{review.renters.fname}} {{review.renters.lname}}</h5>
+                        <p>{{review.rating_star}}⭐</p>
+                        <div class="testimonial-text bg-light text-center p-4">
+                        <p class="mb-0">{% if review.rating_reviews is not None %}"{{review.rating_reviews}}" {% else %}No{% endif %}</p>
+                        </div>
+                      </div>
+                    {% endfor %}
+                  </div>
+                  {% else %}
+                  <div class="d-flex m-3">
+                    <h3 class="">No reviews found</h3> 
+                </div>
+                
+                  {% endif %}
+              </div>
                 
             </div>
         </div>

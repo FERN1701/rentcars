@@ -200,6 +200,50 @@
 							</div>
 						</div>
 					</div>
+          
+
+
+          {% if cars.rating_bolean == 1 %}
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title mb-0">Write your expirience with us !!<br>
+            </div>
+            <div class="card-body">
+              <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="row">
+                  <div class="col-sm-4">
+                    <label for="">Rate Number</label>
+                    {{rev.rating_star}}
+                  </div>
+                  <div class="col-sm-12">
+                    <label for="">Reviews</label>
+                    {{rev.rating_reviews}}
+                  </div>
+                  <div class="col-sm-12 mt-2">
+                    <button type="submit" class="btn btn-danger">Rate Now</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+          {% elif cars.rating_bolean == 2 %}
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title mb-0">Write your expirience with us !!<br>
+            </div>
+            <div class="card-body">
+              <h3>Ratings : 
+                {% for star in stars %}
+                  ⭐
+                {% endfor %}
+                </h3>
+                <p>
+                  {{cars.rating_reviews}}
+                </p>
+            </div>
+          </div>
+          {% endif %}
 
           {% if cars.status == "unpaid" and cars.payment_choice == 1 %}
             <div class="card">
@@ -261,6 +305,8 @@
                   </div>
                 </form>
                 {% endif %}
+
+                
                 
               </div>
             </div>

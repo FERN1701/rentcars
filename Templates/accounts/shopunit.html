@@ -74,7 +74,7 @@
                                                 </button>
                                               </div>
                                         </div>
-                                        <div class="col-sm-8">
+                                        <div class="col-sm-5 border-end mb-5">
                                             <div class="table-responsive">
                                                 <table class="table">
                                                     <thead>
@@ -115,8 +115,54 @@
                                             <a href="{% url 'details_shops' slug=slug%}" class="btn btn-secondary">Back</a>
                                             
                                         </div>
-                                       
-                                      </div>
+                                       <div class="col-sm-3">
+                                        <h4>Reviews</h4>
+                                          {% if ratings %}
+                                          <div id="carouselExampleAutoplaying" class="carousel slide" data-bs-ride="carousel">
+                                            <div class="carousel-inner">
+                                              {% for rating in ratings %}
+                                                <div class="carousel-item {% if forloop.counter == 1 %}active{% endif %}">
+                                                  <div class="">
+                                                    <div class="d-flex justify-content-center">
+                                                        <img src="{{rating.renters.avatar.url}}" alt="" class="img-thumbnail" width="100px">
+                                                    </div>
+                                                    <hr>
+                                                    <div class="">
+                                                      <div class="row">
+                                                        <div class="col-sm-6">
+                                                          {{rating.renters.fname}}
+                                                        </div>
+                                                        <div class="col-sm-6">
+                                                          {{rating.renters.lname}}
+                                                        </div>
+                                                        <div class="col-sm-6">
+                                                          {{rating.rating_star}} ⭐
+                                                        </div>
+                                                        <div class="col-sm-12">
+                                                          "{{rating.rating_reviews}}"
+                                                        </div>
+                                                      </div>
+                                                    </div>
+                                                  </div>
+                                                </div>
+                                                
+                                              {% endfor %}
+                                            </div>
+                                            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide="prev">
+                                              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                              <span class="visually-hidden">Previous</span>
+                                            </button>
+                                            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide="next">
+                                              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                              <span class="visually-hidden">Next</span>
+                                            </button>
+                                          </div>
+                                          {% else %}
+                                          <p>No Reviews</p>
+                                          
+                                          {% endif %}
+                                       </div>
+                                    </div>
 								</div>
 							</div>
 						</div>
