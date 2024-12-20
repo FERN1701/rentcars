@@ -5,7 +5,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
 from django.urls import path, include
-#for Routing
+#for Routing #trexcontroladmin 
 
 urlpatterns = [
     path('',views.home,name = 'home'),
