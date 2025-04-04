@@ -1,7 +1,40 @@
 {% load static %}
+{% load humanize %}
 <!DOCTYPE html>
 <html lang="en">
 {% include 'accounts/head.html' %}
+<style>
+    .pulse {
+        width: 9.6px;
+        height: 9.6px;
+        border-radius: 50%;
+        background: #ca0b20;
+        box-shadow: 0 0 0 0 rgba(202,11,32,0.5);
+        animation: pulse-kefe91mn 2.0999999999999996s infinite linear;
+        position: relative;
+     }
+     
+     .pulse:before,
+     .pulse:after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        box-shadow: 0 0 0 0 rgba(202,11,32,0.5);
+        animation: inherit;
+        animation-delay: -0.7s;
+     }
+     
+     .pulse:after {
+        animation-delay: -1.4s;
+     }
+     
+     @keyframes pulse-kefe91mn {
+        100% {
+           box-shadow: 0 0 0 19.2px #0000;
+        }
+     }
+    </style>
 <body>
 	<script>
 		{% for m in messages  %}
@@ -49,6 +82,7 @@
                                               <tr>
                                                 <th scope="col">#</th>
                                                 <th scope="col">Affiliated Shop</th>
+                                                <th scope="col">Hourly rate</th>
                                                 <th scope="col">Date Registed</th>
                                                 <th scope="col">Status</th>
                                                 <th scope="col">Action</th>
@@ -59,6 +93,7 @@
                                                     <tr>
                                                         <td>{{ forloop.counter }}</td>
                                                         <td>{{list.shop_under.shop_name}}</td>
+                                                        <td>₱ {{ list.drivers_rate|floatformat:2|intcomma }}</td>
                                                         <td>{{list.date_registered}}</td>
                                                         <td>{% if list.status == 1 %}
                                                             Approved
@@ -68,7 +103,20 @@
                                                             Not Approved
                                                         {% endif %}</td>
                                                         <td>
-                                                            <a href="" class="btn btn-dark">Request Removal</a>
+                                                            
+                                                            
+                                                            {% if list.status != 4 %}
+                                                                {% if list.status == 1 %}
+                                                                    <a href="{% url 'account_lock_driver' pk=list.id %}" class="btn  btn-danger">Lock</a>
+                                                                {% else %}
+                                                                    <a href="{% url 'account_lock_driver' pk=list.id %}" class="btn  btn-success text-dark">unlock</a>
+                                                                {% endif %}
+                                                                <a href="{% url 'account_removal_driver' pk=list.id %}" class="btn  btn-danger">Request removal</a>
+                                                            {% else %}
+                                                            <div class="pulse"></div>
+                                                                <a href="{% url 'account_removal_driver' pk=list.id %}" class="btn  btn-secondary">Processing removal</a>
+                                                            {% endif %}
+                                                            
                                                         </td>
                                                     </tr>
                                                 {% endfor %}

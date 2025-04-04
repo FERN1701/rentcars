@@ -1,0 +1,48 @@
+
+
+              http://127.0.0.1:8000/vehicle/
+              Search Cars
+              Make = Toyota
+       DONE   Seater = 4seat
+              VehicleType = electric car 
+              OR functions
+
+
+http://127.0.0.1:8000/myshop/details/prime-shop-airport/
+Default Inventory
+rent processing 
+in progress - On highway
+rented- returned
+Severe isseus
+
+
+              http://127.0.0.1:8000/registered/vehicles/
+              Search Cars
+       DONE   Make = Toyota
+              Seater = 4seat
+              VehicleType = electric car
+              OR functions
+
+
+              http://127.0.0.1:8000/shop/mydrive/
+       DONE   Driver status not available and Available and not shown here 
+              http://127.0.0.1:8000/rent/vehicles/1/
+
+
+              http://127.0.0.1:8000/rent/vehicles/1/
+       DONE   Driver color availability status
+
+
+http://127.0.0.1:8000/myshop/rent/RENT0649951673C/
+Check damage for cars if returning 
+reason of damage and cost
+Payment onsite and online
+Lock if damage is true remind dashboard damages
+
+
+
+Status Renaming
+
+
+
+

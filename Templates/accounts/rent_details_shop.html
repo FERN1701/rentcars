@@ -3,6 +3,22 @@
 <!DOCTYPE html>
 <html lang="en">
 {% include 'accounts/head.html' %}
+<style>
+  .pulse {
+     width: 22.4px;
+     height: 22.4px;
+     border-radius: 50%;
+     background: #d00919;
+     box-shadow: 0 0 0 0 rgba(208,9,25,0.5);
+     animation: pulse-c6zlskmd 0.6s infinite;
+  }
+  
+  @keyframes pulse-c6zlskmd {
+     100% {
+        box-shadow: 0 0 0 33.6px #0000;
+     }
+  }
+  </style>
 <body>
 	<script>
 		{% for m in messages  %}
@@ -41,8 +57,9 @@
 					<div class="row">
 						<div class="col-12">
 							<div class="card">
-								<div class="card-header">
-									  <h1 class="modal-title">Rent Details <br></h1>
+								<div class="card-header d-flex">
+									  <h1 class="modal-title">Rent Details</h1>
+                    {% if rent.issues == 1  %} <p class="text-danger">- Rent issues</p>{% endif %}
 								</div>
 								<div class="card-body">
 
@@ -57,7 +74,7 @@
                                           </div>
                                           <div class="col-sm-6">
                                             <h5>
-                                              Garage Status : {% if rent.unit_release == 1 %}<i class="fi fi-ss-circle text-secondary"></i> {% elif rent.unit_release == 2 %}<i class="fi fi-ss-circle text-danger"></i>{% else %}Returning to Garage{% endif %} <br>
+                                              <div class="d-flex">Garage Status : {% if rent.unit_release == 1 %}<i class="fi fi-ss-circle text-secondary"></i> {% elif rent.unit_release == 2 %}<div class="pulse ml-5"></div> <p>Rent proggress</p>{% else %} <p>Returning to Garage</p> {% endif %}</div> <br>
                                               {% if rent.out_garage != Null %}Unit Garage Out: {{rent.out_garage}}{% endif %} <br>
                                               {% if rent.return_garage != Null %}
                                               
@@ -152,6 +169,12 @@
                                                         <td>Car fee: ₱{{ rent.car_fee_total|floatformat:2|intcomma }}</td>
                                                         <td>Transaction fee: ₱{{ rent.share_rates|floatformat:2|intcomma }} <br> ({{rate}}% deduction) </td>
                                                       </tr>
+
+                                                      {% if rent.issues == 1 %}
+                                                        <tr class="bg-warning">
+                                                          <td colspan="4">Damage Cost: ₱{{ rent.total_cost_issue|floatformat:2|intcomma }}</td>
+                                                        </tr>
+                                                      {% endif %}
                                                       <tr>
                                                         <td colspan="4">Total Payment: ₱{{ rent.total_fare|floatformat:2|intcomma }}</td>
                                                       </tr>
@@ -232,11 +255,18 @@
                                           {% endif %}
                                           
                                         {% elif rent.unit_release == 3 %}
-                                          <a href="{% url 'recieved_garage' pk=rent.id %}" class="btn btn-danger">Recieve Car unit upon returning</a>
+                                          <a href="{% url 'recieved_garage' pk=rent.id %}" class="btn btn-warning text-dark">Recieve Car unit upon returning</a>
+                                          
                                         {% endif %}
                                        
                                     {% endif %}
+                                    {% if rent.issues == 1 %}
+                                            <a href="{% url 'report_issues' pk=rent.id %}" class="btn btn-danger">List of Issues</a>
+                                          {% else %}
+                                            <a href="{% url 'report_issues' pk=rent.id %}" class="btn btn-danger">Report issue</a>
+                                          {% endif %}
                                         <a href="{% url 'myshop_details' slug=slugs %}" class="btn btn-dark">Back</a>
+                                        
                                 </div>
 							</div>
 						</div>

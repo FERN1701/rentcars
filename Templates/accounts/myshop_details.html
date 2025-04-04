@@ -3,6 +3,22 @@
 <!DOCTYPE html>
 <html lang="en">
 {% include 'accounts/head.html' %}
+<style>
+	.pulse {
+	   width: 16px;
+	   height: 16px;
+	   border-radius: 50%;
+	   background: #d00919;
+	   box-shadow: 0 0 0 0 rgba(208,9,25,0.5);
+	   animation: pulse-c6zlsksm 0.6s infinite;
+	}
+	
+	@keyframes pulse-c6zlsksm {
+	   100% {
+		  box-shadow: 0 0 0 24px #0000;
+	   }
+	}
+	</style>
 <body>
     <style>
         .card{
@@ -211,41 +227,216 @@
 							<div class="card flex-fill w-100">
 								<div class="card-body px-4">
 									<h5>Rented cars</h5>
-									<div class="table-responsive">
-                                        <table id="printables" class="display" style="width:100%">
-                                            <thead>
-                                                <tr>
-                                                    <th>References</th>
-                                                    <th>Car Detail</th>
-                                                    <th>Rent Hrs</th>
-													<th>Total Amount</th>
-													<th>Drivers included?</th>
-													<th>Status</th>
-                                                    <th>Action</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-												{% for rent in rented_cars %}
-													<tr class="">
-														<td>
-															{% if rent.unit_release == 1 %}{% if rent.transaction_done == 1 %} <i class="fi fi-ss-circle text-dark"></i>{% else %}<i class="fi fi-ss-circle text-secondary"></i>{% endif %} {% elif rent.unit_release == 2 %}<i class="fi fi-ss-circle text-danger"></i>{% endif %} {{rent.rent_id}}</td>
-														<td>{{rent.unit_rented.model_car}} {{rent.unit_rented.categories}} </td>
-														<td>{{rent.total_hrs}} hrs <br>
-														{% if rent.unit_release == 1 %}Inside Garage {% elif rent.unit_release == 2 %}outside garage{% endif %}</td>
-														<td>₱{{ rent.total_fare|floatformat:2|intcomma }} <br>
-															{% if rent.payment_choice == 1 %}pay onsite {% else %}pay online {% endif %}</td>
-														<td>{% if rent.driver_shp is Null %}No driver{% else %}Included{% endif %}</td>
-														<td>{{rent.status}}</td>
-														<td>
-															<a href="{% url 'rent_details_shop' rentid=rent.rent_id %}" class="btn btn-sm btn-danger">Rent details</a>
-															
-														</td>
-													</tr>
-												{% endfor %}                    
-                                            </tbody>                     
-                                        </table>
-                                    </div>
-									
+
+
+
+									<ul class="nav nav-tabs" id="myTab" role="tablist">
+										<li class="nav-item" role="presentation">
+										  <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">All rent</button>
+										</li>
+										<li class="nav-item" role="presentation">
+										  <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">Processing</button>
+										</li>
+										<li class="nav-item" role="presentation">
+										  <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact-tab-pane" type="button" role="tab" aria-controls="contact-tab-pane" aria-selected="false">Progress</button>
+										</li>
+										<li class="nav-item" role="presentation">
+											<button class="nav-link" id="nav-retuned-tab" data-bs-toggle="tab" data-bs-target="#nav-retuned" type="button" role="tab" aria-controls="nav-retuned" aria-selected="false">Retuned</button>
+										</li>
+										<li class="nav-item" role="presentation">
+											<button class="nav-link" id="nav-issues-tab" data-bs-toggle="tab" data-bs-target="#nav-issues" type="button" role="tab" aria-controls="nav-issues" aria-selected="false">Issues</button>
+										</li>
+									  </ul>
+									  <div class="tab-content" id="myTabContent">
+										<div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
+
+											<div class="table-responsive mt-3">
+												<table id="printables" class="display" style="width:100%">
+													<thead>
+														<tr>
+															<th>References</th>
+															<th>Car Detail</th>
+															<th>Rent Hrs</th>
+															<th>Total Amount</th>
+															<th>Drivers included?</th>
+															<th>Status</th>
+															<th>Action</th>
+														</tr>
+													</thead>
+													<tbody>
+														{% for rent in rented_cars %}
+															<tr class="">
+																<td class="{% if rent.issues == 1 %}bg-danger text-light{% endif %} {% if rent.unit_release == 3 %}bg-warning text-dark{% endif %}"><div class="d-flex">{% if rent.unit_release == 1 %}{% if rent.transaction_done == 1 %} <i class="fi fi-ss-circle text-dark m-1"></i>{% else %}<i class="fi fi-ss-circle text-secondary m-1"></i>{% endif %} {% elif rent.unit_release == 2 %}<div class="pulse m-1"></div> {% endif %} {% if rent.unit_release == 3 %} Returning -  {% endif %} <p class="m-1"> {% if rent.issues == 1 %}Rent issue - {% endif %} {{rent.rent_id}}</p></div></td>
+																<td>{{rent.unit_rented.model_car}} {{rent.unit_rented.categories}} </td>
+																<td>{{rent.total_hrs}} hrs <br>
+																{% if rent.unit_release == 1 %}Inside Garage {% elif rent.unit_release == 2 %}outside garage{% endif %}</td>
+																<td>₱{{ rent.total_fare|floatformat:2|intcomma }} <br>
+																	{% if rent.payment_choice == 1 %}pay onsite {% else %}pay online {% endif %}</td>
+																<td>{% if rent.driver_shp is Null %}No driver{% else %}Included{% endif %}</td>
+																<td>{{rent.status}}</td>
+																<td>
+																	<a href="{% url 'rent_details_shop' rentid=rent.rent_id %}" class="btn btn-sm btn-danger">Rent details</a>
+																	
+																</td>
+															</tr>
+														{% endfor %}                    
+													</tbody>                     
+												</table>
+											</div>
+
+										</div>
+										<div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
+
+											<div class="table-responsive mt-3">
+												<table id="mydata3" class="display" style="width:100%">
+													<thead>
+														<tr>
+															<th>References</th>
+															<th>Car Detail</th>
+															<th>Rent Hrs</th>
+															<th>Total Amount</th>
+															<th>Drivers included?</th>
+															<th>Status</th>
+															<th>Action</th>
+														</tr>
+													</thead>
+													<tbody>
+														{% for rent in rented_cars_processing %}
+															<tr class="">
+																<td>
+																	{% if rent.unit_release == 1 %}{% if rent.transaction_done == 1 %} <i class="fi fi-ss-circle text-dark"></i>{% else %}<i class="fi fi-ss-circle text-secondary"></i>{% endif %} {% elif rent.unit_release == 2 %}<i class="fi fi-ss-circle text-danger"></i>{% endif %} {{rent.rent_id}}</td>
+																<td>{{rent.unit_rented.model_car}} {{rent.unit_rented.categories}} </td>
+																<td>{{rent.total_hrs}} hrs <br>
+																{% if rent.unit_release == 1 %}Inside Garage {% elif rent.unit_release == 2 %}outside garage{% endif %}</td>
+																<td>₱{{ rent.total_fare|floatformat:2|intcomma }} <br>
+																	{% if rent.payment_choice == 1 %}pay onsite {% else %}pay online {% endif %}</td>
+																<td>{% if rent.driver_shp is Null %}No driver{% else %}Included{% endif %}</td>
+																<td>{{rent.status}}</td>
+																<td>
+																	<a href="{% url 'rent_details_shop' rentid=rent.rent_id %}" class="btn btn-sm btn-danger">Rent details</a>
+																	
+																</td>
+															</tr>
+														{% endfor %}                    
+													</tbody>                     
+												</table>
+											</div>
+
+										</div>
+										<div class="tab-pane fade" id="contact-tab-pane" role="tabpanel" aria-labelledby="contact-tab" tabindex="0">
+
+											<div class="table-responsive mt-3">
+												<table id="mydata2" class="display" style="width:100%">
+													<thead>
+														<tr>
+															<th>References</th>
+															<th>Car Detail</th>
+															<th>Rent Hrs</th>
+															<th>Total Amount</th>
+															<th>Drivers included?</th>
+															<th>Status</th>
+															<th>Action</th>
+														</tr>
+													</thead>
+													<tbody>
+														{% for rent in rented_cars_release %}
+															<tr class="">
+																<td class="{% if rent.unit_release == 3 %}text-dark bg-warning{% endif %}">
+																	{% if rent.unit_release == 1 %}{% if rent.transaction_done == 1 %} <i class="fi fi-ss-circle text-dark"></i>{% else %}<i class="fi fi-ss-circle text-secondary"></i>{% endif %} {% elif rent.unit_release == 2 %}<i class="fi fi-ss-circle text-danger"></i> {% elif rent.unit_release == 3 %} Returning -  {% endif %} {{rent.rent_id}}</td>
+																<td>{{rent.unit_rented.model_car}} {{rent.unit_rented.categories}} </td>
+																<td>{{rent.total_hrs}} hrs <br>
+																{% if rent.unit_release == 1 %}Inside Garage {% elif rent.unit_release == 2 %}outside garage{% endif %}</td>
+																<td>₱{{ rent.total_fare|floatformat:2|intcomma }} <br>
+																	{% if rent.payment_choice == 1 %}pay onsite {% else %}pay online {% endif %}</td>
+																<td>{% if rent.driver_shp is Null %}No driver{% else %}Included{% endif %}</td>
+																<td>{{rent.status}}</td>
+																<td>
+																	<a href="{% url 'rent_details_shop' rentid=rent.rent_id %}" class="btn btn-sm btn-danger">Rent details</a>
+																	
+																</td>
+															</tr>
+														{% endfor %}                    
+													</tbody>                     
+												</table>
+											</div>
+
+										</div>
+										
+										<div class="tab-pane fade" id="nav-retuned" role="tabpanel" aria-labelledby="nav-retuned-tab" tabindex="0">
+											<div class="table-responsive mt-3">
+												<table id="mydata4" class="display" style="width:100%">
+													<thead>
+														<tr>
+															<th>References</th>
+															<th>Car Detail</th>
+															<th>Rent Hrs</th>
+															<th>Total Amount</th>
+															<th>Drivers included?</th>
+															<th>Status</th>
+															<th>Action</th>
+														</tr>
+													</thead>
+													<tbody>
+														{% for rent in rented_cars_transaction %}
+															<tr class="">
+																<td class="{% if rent.unit_release == 3 %}text-dark bg-warning{% endif %}">
+																	{% if rent.unit_release == 1 %}{% if rent.transaction_done == 1 %} <i class="fi fi-ss-circle text-dark"></i>{% else %}<i class="fi fi-ss-circle text-secondary"></i>{% endif %} {% elif rent.unit_release == 2 %}<i class="fi fi-ss-circle text-danger"></i> {% elif rent.unit_release == 3 %} Returning -  {% endif %} {{rent.rent_id}}</td>
+																<td>{{rent.unit_rented.model_car}} {{rent.unit_rented.categories}} </td>
+																<td>{{rent.total_hrs}} hrs <br>
+																{% if rent.unit_release == 1 %}Inside Garage {% elif rent.unit_release == 2 %}outside garage{% endif %}</td>
+																<td>₱{{ rent.total_fare|floatformat:2|intcomma }} <br>
+																	{% if rent.payment_choice == 1 %}pay onsite {% else %}pay online {% endif %}</td>
+																<td>{% if rent.driver_shp is Null %}No driver{% else %}Included{% endif %}</td>
+																<td>{{rent.status}}</td>
+																<td>
+																	<a href="{% url 'rent_details_shop' rentid=rent.rent_id %}" class="btn btn-sm btn-danger">Rent details</a>
+																	
+																</td>
+															</tr>
+														{% endfor %}                    
+													</tbody>                     
+												</table>
+											</div>
+										</div>
+										
+										<div class="tab-pane fade" id="nav-issues" role="tabpanel" aria-labelledby="nav-issues-tab" tabindex="0">
+											<div class="table-responsive mt-3">
+												<table id="mydata5" class="display" style="width:100%">
+													<thead>
+														<tr>
+															<th>References</th>
+															<th>Car Detail</th>
+															<th>Rent Hrs</th>
+															<th>Total Amount</th>
+															<th>Drivers included?</th>
+															<th>Status</th>
+															<th>Action</th>
+														</tr>
+													</thead>
+													<tbody>
+														{% for rent in rented_cars_issues %}
+															<tr class="">
+																<td class="{% if rent.issues == 1 %}bg-danger text-light{% endif %} {% if rent.unit_release == 3 %}text-dark bg-warning{% endif %}">
+																	{% if rent.unit_release == 1 %}{% if rent.transaction_done == 1 %} <i class="fi fi-ss-circle text-dark"></i>{% else %}<i class="fi fi-ss-circle text-secondary"></i>{% endif %} {% elif rent.unit_release == 2 %}<i class="fi fi-ss-circle text-danger"></i> {% elif rent.unit_release == 3 %} Returning -  {% endif %} {% if rent.issues == 1 %}Rent issues - {% endif %} {{rent.rent_id}}</td>
+																<td>{{rent.unit_rented.model_car}} {{rent.unit_rented.categories}} </td>
+																<td>{{rent.total_hrs}} hrs <br>
+																{% if rent.unit_release == 1 %}Inside Garage {% elif rent.unit_release == 2 %}outside garage{% endif %}</td>
+																<td>₱{{ rent.total_fare|floatformat:2|intcomma }} <br>
+																	{% if rent.payment_choice == 1 %}pay onsite {% else %}pay online {% endif %}</td>
+																<td>{% if rent.driver_shp is Null %}No driver{% else %}Included{% endif %}</td>
+																<td>{{rent.status}}</td>
+																<td>
+																	<a href="{% url 'rent_details_shop' rentid=rent.rent_id %}" class="btn btn-sm btn-danger">Rent details</a>
+																	
+																</td>
+															</tr>
+														{% endfor %}                    
+													</tbody>                     
+												</table>
+											</div>
+										</div>
+										<div class="tab-pane fade" id="nav-name" role="tabpanel" aria-labelledby="nav-name-tab" tabindex="0">name</div>
+									  </div>
 								</div>
 							</div>
 							

@@ -47,19 +47,10 @@
 										{% csrf_token %}
 										<div class="row">
 											<div class="col-sm-3">
-												<label for="">Brand</label>
+												<label for="">Make</label>
 												<select name="brand" id="" class="form-control">
-													<option selected disabled="true">--- Select Brand cars -- </option>
+													<option selected disabled="true">--- Select Make -- </option>
 													{% for value, label in Brands %}
-														<option>{{value}}</option>
-													{% endfor %}
-												</select>
-											</div>
-											<div class="col-sm-3">
-												<label for="fuel">Fuel</label>
-												<select name="fuel" id="" class="form-control">
-													<option selected disabled="true">--- Select fuels -- </option>
-													{% for value, label in fuel_types %}
 														<option>{{value}}</option>
 													{% endfor %}
 												</select>
@@ -74,9 +65,9 @@
 												</select>
 											</div>
 											<div class="col-sm-3">
-												<label for="">Transmission</label>
+												<label for="">Type</label>
 												<select name="transmission" id="" class="form-control">
-													<option selected disabled="true">--- Select transmission -- </option>
+													<option selected disabled="true">--- Select Type -- </option>
 													{% for value, label in transmission %}
 														<option>{{value}}</option>
 													{% endfor %}

@@ -14,6 +14,7 @@ from datetime import datetime
 from django.utils.timezone import now 
 import pytz
 from django.db.models import Sum, Max
+from django.db.models import Q
 
 
 
@@ -142,8 +143,25 @@ def vehicle(request):
     if controlsite.control == 1:
         return redirect(controlsite.site)
     vehicle = Vehicle.objects.filter(status="published")
+
+    if request.method=="POST":
+        searchbrand= request.POST.get('brand')
+        searchseat = request.POST.get('seat')
+        searchtransmission= request.POST.get('transmission')
+        vehicle = Vehicle.objects.filter(
+            Q(categories=searchbrand) | 
+            Q(seat=searchseat) | 
+            Q(transmission=searchtransmission)
+        ).filter(status="published")
+    else:
+        vehicle = Vehicle.objects.filter(status="published")
+    
     context = {
         "vehicle":vehicle,
+        'Brands':Brands,
+        'fuel_types':fuel_types,
+        'seat':seat,
+        'transmission':transmission,
     }
     return render(request,'public/vehicle.html',context)
 
@@ -358,6 +376,7 @@ def admin(request):
     page = 'homedashboard'
     title_page = 'Administrator'
     users = request.user
+    rent_issues = rent_issue.objects.filter(rent__renters=users)
     manila_timezone = pytz.timezone("Asia/Manila")
     yrs = datetime.now(manila_timezone).strftime('%Y')
     current_time = datetime.now(manila_timezone).strftime('%Y-%m-%d %H:%M:%S')
@@ -371,6 +390,7 @@ def admin(request):
         'page':page,
         'title_page':title_page,
         'users':users,
+        'rent_issues':rent_issues,
         'monthly_counts':monthly_counts,
         'count_cars':count_cars,
         'count_users':count_users,
@@ -389,6 +409,7 @@ def admin(request):
 @role_required(allowed_roles=['1'], redirect_url='users')
 def rent_details_shop_admin(request,rentid):
     users = request.user
+    rent_issues = rent_issue.objects.filter(rent__renters=users)
     page = 'myslistshop'
     title_page = 'Shop Details'
     rate_details = get_object_or_404(rates,pk=1)
@@ -406,6 +427,7 @@ def rent_details_shop_admin(request,rentid):
         'page':page,
         'title_page':title_page,
         'users':users,
+        'rent_issues':rent_issues,
         'my_shops':my_shops,
         'shops':shops,
         'drivings':drivings,
@@ -425,10 +447,12 @@ def blank(request):
     page = 'blank'
     title_page = 'blank'
     users = request.user
+    rent_issues = rent_issue.objects.filter(rent__renters=users)
     context = {
         'page':page,
         'title_page':title_page,
         'users':users,
+        'rent_issues':rent_issues,
        
     }
     return render(request, 'accounts/blank.html',context)
@@ -440,6 +464,7 @@ def list_administrators(request):
     page = 'adminlist'
     title_page = 'Administrator list'
     users = request.user
+    rent_issues = rent_issue.objects.filter(rent__renters=users)
     admins = User.objects.filter(roles='1')
     form = MyUserCreationForm()
     if request.method == 'POST':
@@ -472,6 +497,7 @@ def list_administrators(request):
         'page':page,
         'title_page':title_page,
         'users':users,
+        'rent_issues':rent_issues,
         'form': form,
         'admins':admins,
        
@@ -485,11 +511,13 @@ def list_users(request):
     page = 'userlist'
     title_page = 'User list'
     users = request.user
+    rent_issues = rent_issue.objects.filter(rent__renters=users)
     admins = User.objects.filter(roles='2',is_staff="0")
     context = {
         'page':page,
         'title_page':title_page,
         'users':users,
+        'rent_issues':rent_issues,
         'admins':admins,
        
     }
@@ -504,10 +532,12 @@ def user_details(request,pk):
     page = 'userlist'
     title_page = 'User list'
     users = request.user
+    rent_issues = rent_issue.objects.filter(rent__renters=users)
     context = {
         'page':page,
         'title_page':title_page,
         'users':users,
+        'rent_issues':rent_issues,
         'details':details,
         'ishop':ishop,
 
@@ -520,6 +550,7 @@ def user_details(request,pk):
 @role_required(allowed_roles=['1','2'], redirect_url='logoutUser')
 def profile(request):
     users = request.user
+    rent_issues = rent_issue.objects.filter(rent__renters=users)
     current_email = users.email
     user_id = users.id
     drivings = driver_shop.objects.filter(account=users)
@@ -538,6 +569,7 @@ def profile(request):
         'current_email':current_email,
         'form':form,
         'users':users,
+        'rent_issues':rent_issues,
         'my_shops':my_shops,
     }
     return render(request, 'accounts/profile.html',context)
@@ -549,6 +581,7 @@ def profile(request):
 @role_required(allowed_roles=['1'], redirect_url='users')
 def payments(request):
     users = request.user
+    rent_issues = rent_issue.objects.filter(rent__renters=users)
     page = 'payments'
     title_page = 'Payments'
     payment_details = get_object_or_404(rates,pk=1)
@@ -573,6 +606,7 @@ def payments(request):
         'title_page':title_page,
         'form':form,
         'users':users,
+        'rent_issues':rent_issues,
         'payment_details':payment_details,
         'list_transactions_approved':list_transactions_approved,
         'list_transactions_uncheck':list_transactions_uncheck,
@@ -589,6 +623,7 @@ def payments(request):
 @role_required(allowed_roles=['1'], redirect_url='users')
 def payments_details(request,refnumber):
     users = request.user
+    rent_issues = rent_issue.objects.filter(rent__renters=users)
     page = 'payments'
     admin = 1
     title_page = 'Request Payment Details'
@@ -600,6 +635,7 @@ def payments_details(request,refnumber):
         'page':page,
         'title_page':title_page,
         'users':users,
+        'rent_issues':rent_issues,
         'my_shops':my_shops,
         'shops':shops,
         'drivings':drivings,
@@ -616,6 +652,7 @@ def payments_details(request,refnumber):
 @role_required(allowed_roles=['1'], redirect_url='users')
 def shops(request):
     users = request.user
+    rent_issues = rent_issue.objects.filter(rent__renters=users)
     page = 'regshops'
     title_page = 'Registered Shops'
 
@@ -626,6 +663,7 @@ def shops(request):
         'page':page,
         'title_page':title_page,
         'users':users,
+        'rent_issues':rent_issues,
         'list_shops':list_shops,
 
     }
@@ -635,6 +673,7 @@ def shops(request):
 @role_required(allowed_roles=['1'], redirect_url='users')
 def shops_details(request, pk):
     users = request.user
+    rent_issues = rent_issue.objects.filter(rent__renters=users)
     details_shop = get_object_or_404(Shops,pk=pk)
     car_count = Vehicle.objects.filter(shop_belong=details_shop).count()
     driver_count = driver_shop.objects.filter(shop_under=details_shop).count()
@@ -645,6 +684,7 @@ def shops_details(request, pk):
         'page':page,
         'title_page':title_page,
         'users':users,
+        'rent_issues':rent_issues,
         'details_shop':details_shop,
         'car_count':car_count,
         'driver_count':driver_count
@@ -659,6 +699,7 @@ def shops_details(request, pk):
 @role_required(allowed_roles=['1'], redirect_url='users')
 def vehicles_list(request):
     users = request.user
+    rent_issues = rent_issue.objects.filter(rent__renters=users)
     page = 'regcars'
     title_page = 'Registered Cars'
 
@@ -669,6 +710,7 @@ def vehicles_list(request):
         'page':page,
         'title_page':title_page,
         'users':users,
+        'rent_issues':rent_issues,
         'list_vehicles':list_vehicles,
 
     }
@@ -709,10 +751,15 @@ def published_cars(request, pk):
 @login_required(login_url='signin')
 @role_required(allowed_roles=['2'], redirect_url='admin')
 def users(request):
+
     controlsite = get_object_or_404(controls, pk=1)
     if controlsite.control == 1:
         return redirect(controlsite.site)
+    
+    
     users = request.user
+    rent_issues = rent_issue.objects.filter(rent__renters=users)
+    rent_issues = rent_issue.objects.filter(rent__renters=users)
     page = 'homedashboard'
     title_page = 'Prime Cars'
     drivings = driver_shop.objects.filter(account=users)
@@ -724,9 +771,11 @@ def users(request):
         'page':page,
         'title_page':title_page,
         'users':users,
+        'rent_issues':rent_issues,
         'my_shops':my_shops, 
         'registred_shops':registred_shops,
         'rented_cars':rented_cars,
+        'rent_issues':rent_issues,
         'drivings':drivings,
     }
     return render(request, 'accounts/index_users.html',context)
@@ -735,6 +784,7 @@ def users(request):
 @role_required(allowed_roles=['2'], redirect_url='admin')
 def myshops(request):
     users = request.user
+    rent_issues = rent_issue.objects.filter(rent__renters=users)
     page = 'myshops'
     title_page = 'My Shops'
     drivings = driver_shop.objects.filter(account=users)
@@ -771,6 +821,7 @@ def myshops(request):
 @role_required(allowed_roles=['2'], redirect_url='admin')
 def edit_myshops(request,slug):
     users = request.user
+    rent_issues = rent_issue.objects.filter(rent__renters=users)
     page = 'myslistshop'
     title_page = 'Edit Shop details'
     drivings = driver_shop.objects.filter(account=users)
@@ -816,6 +867,7 @@ def delete_myshops(request, slug):
 @role_required(allowed_roles=['2'], redirect_url='admin')
 def mylistshop(request):
     users = request.user
+    rent_issues = rent_issue.objects.filter(rent__renters=users)
     page = 'myslistshop'
     title_page = 'My Shops'
     drivings = driver_shop.objects.filter(account=users)
@@ -825,6 +877,7 @@ def mylistshop(request):
         'page':page,
         'title_page':title_page,
         'users':users,
+        'rent_issues':rent_issues,
         'my_shops':my_shops, 
         'drivings':drivings,
     }
@@ -835,6 +888,7 @@ def mylistshop(request):
 @role_required(allowed_roles=['2'], redirect_url='admin')
 def registered_shops(request):
     users = request.user
+    rent_issues = rent_issue.objects.filter(rent__renters=users)
     page = 'regshops'
     title_page = 'Registered Shops'
     drivings = driver_shop.objects.filter(account=users)
@@ -845,6 +899,7 @@ def registered_shops(request):
         'page':page,
         'title_page':title_page,
         'users':users,
+        'rent_issues':rent_issues,
         'my_shops':my_shops, 
         'registred_shops':registred_shops,
         'drivings':drivings,
@@ -856,6 +911,10 @@ def registered_shops(request):
 @role_required(allowed_roles=['2'], redirect_url='admin')
 def details_shops(request,slug):
     users = request.user
+    rent_issues = rent_issue.objects.filter(rent__renters=users)
+    if rent_issues:
+        messages.error(request, "You are not authorized to rent")
+        return redirect('users')
     details_shop = get_object_or_404(Shops,slug=slug)
     shopname = details_shop.shop_name
     page = 'regshops'
@@ -888,6 +947,7 @@ def details_shops(request,slug):
         'page':page,
         'title_page':title_page,
         'users':users,
+        'rent_issues':rent_issues,
         'my_shops':my_shops, 
         'registred_shops':registred_shops,
         'details_shop':details_shop,
@@ -911,6 +971,7 @@ def details_shops(request,slug):
 @role_required(allowed_roles=['2'], redirect_url='admin')
 def myshop_details(request,slug):
     users = request.user
+    rent_issues = rent_issue.objects.filter(rent__renters=users)
     page = 'myslistshop'
     title_page = 'Shop Details'
     drivings = driver_shop.objects.filter(account=users)
@@ -925,8 +986,13 @@ def myshop_details(request,slug):
     count_not_approve = driver_shop.objects.filter(shop_under=shops ,status=0).count()
     drivers_list = driver_shop.objects.filter(shop_under=shops,status=1)
     count_approve = driver_shop.objects.filter(shop_under=shops,status=1).count()
-    rented_cars = Rented_Cars.objects.filter(unit_rented__shop_belong__in=my_shops)
+    rented_cars = Rented_Cars.objects.filter(unit_rented__shop_belong__in=my_shops) 
+
+    rented_cars_processing = Rented_Cars.objects.filter(unit_rented__shop_belong__in=my_shops,status__in=["pending","unpaid"])
+    rented_cars_release = Rented_Cars.objects.filter(unit_rented__shop_belong__in=my_shops,unit_release__in=[2,3])
     rented_cars_reviews = Rented_Cars.objects.filter(unit_rented__shop_belong__in=my_shops,rating_bolean__in=[1,2])
+    rented_cars_transaction = Rented_Cars.objects.filter(unit_rented__shop_belong__in=my_shops,transaction_done=1)
+    rented_cars_issues = Rented_Cars.objects.filter(unit_rented__shop_belong__in=my_shops,issues=1)
     monthly_counts = Rented_Cars.objects.filter(yr=yrs,transaction_done=1,excess_exist=0, unit_rented__shop_belong=shops).values('mth').annotate(total_fare=Sum('total_fare')).order_by('sqc')
     unclaimed_transactions_count = Rented_Cars.objects.filter(unit_rented__shop_belong=shops,status="paid",excess_exist=0,liquidated=0).count
     payment_request_count = Rented_Cars.objects.filter(unit_rented__shop_belong=shops,drivers_approval="payout").count
@@ -934,6 +1000,7 @@ def myshop_details(request,slug):
         'page':page,
         'title_page':title_page,
         'users':users,
+        'rent_issues':rent_issues,
         'my_shops':my_shops,
         'shops':shops,
         'count_vehicles':count_vehicles,
@@ -941,6 +1008,10 @@ def myshop_details(request,slug):
         'drivers_list':drivers_list,
         'count_approve':count_approve,
         'rented_cars':rented_cars,
+        'rented_cars_processing':rented_cars_processing,
+        'rented_cars_release':rented_cars_release,
+        'rented_cars_transaction':rented_cars_transaction,
+        'rented_cars_issues':rented_cars_issues,
         'drivings':drivings,
         'monthly_counts':monthly_counts,
         'unclaimed_transactions_count':unclaimed_transactions_count,
@@ -958,6 +1029,7 @@ def myshop_details(request,slug):
 @role_required(allowed_roles=['2'], redirect_url='admin')
 def drivers_payout(request,slug):
     users = request.user
+    rent_issues = rent_issue.objects.filter(rent__renters=users)
     page = 'myslistshop'
     title_page = 'Drivers Payout Request'
     drivings = driver_shop.objects.filter(account=users)
@@ -968,6 +1040,7 @@ def drivers_payout(request,slug):
         'page':page,
         'title_page':title_page,
         'users':users,
+        'rent_issues':rent_issues,
         'my_shops':my_shops,
         'shops':shops,
         'slug':slug,
@@ -983,6 +1056,7 @@ def drivers_payout(request,slug):
 @role_required(allowed_roles=['2'], redirect_url='admin')
 def myshop_payment_details(request,slug):
     users = request.user
+    rent_issues = rent_issue.objects.filter(rent__renters=users)
     page = 'myslistshop'
     title_page = 'Shop payment details'
     drivings = driver_shop.objects.filter(account=users)
@@ -1009,6 +1083,7 @@ def myshop_payment_details(request,slug):
         'page':page,
         'title_page':title_page,
         'users':users,
+        'rent_issues':rent_issues,
         'slug':slug,
         'my_shops':my_shops,
         'drivings':drivings,
@@ -1099,6 +1174,7 @@ def Submit_payment(request,slug):
 @role_required(allowed_roles=['1','2'], redirect_url='logoutUser')
 def payment_transaction_details(request,tref):
     users = request.user
+    rent_issues = rent_issue.objects.filter(rent__renters=users)
     page = 'myslistshop'
     title_page = 'Shop Details'
     drivings = driver_shop.objects.filter(account=users)
@@ -1110,6 +1186,7 @@ def payment_transaction_details(request,tref):
         'page':page,
         'title_page':title_page,
         'users':users,
+        'rent_issues':rent_issues,
         'my_shops':my_shops,
         'shops':shops,
         'drivings':drivings,
@@ -1124,6 +1201,7 @@ def payment_transaction_details(request,tref):
 @role_required(allowed_roles=['2'], redirect_url='admin')
 def rent_details_shop(request,rentid):
     users = request.user
+    rent_issues = rent_issue.objects.filter(rent__renters=users)
     page = 'myslistshop'
     title_page = 'Shop Details'
     rate_details = get_object_or_404(rates,pk=1)
@@ -1141,6 +1219,7 @@ def rent_details_shop(request,rentid):
         'page':page,
         'title_page':title_page,
         'users':users,
+        'rent_issues':rent_issues,
         'my_shops':my_shops,
         'shops':shops,
         'drivings':drivings,
@@ -1155,11 +1234,86 @@ def rent_details_shop(request,rentid):
 
 
 
+@login_required(login_url='signin')
+@role_required(allowed_roles=['2'], redirect_url='admin')
+def report_issues(request,pk):
+    users = request.user
+    rent_issues = rent_issue.objects.filter(rent__renters=users)
+    page = 'myslistshop'
+    title_page = 'report issues'
+    rent_details = get_object_or_404(Rented_Cars,pk=pk)
+    list_issue = rent_issue.objects.filter(rent=rent_details)
+    total = 0
+    for issiue in list_issue:
+        total = total + issiue.issue_amount
+    if rent_details.issues == 0:
+        rent_details.issues = 1
+        rent_details.save()
+    elif rent_details.issues == 1:
+        rent_details.total_cost_issue = total
+        rent_details.save()
+
+    if request.method == 'POST':
+        form = rent_issue_form(request.POST, request.FILES)
+        if form.is_valid():
+            issue = form.save(commit=False)  # Don't save to the database yet
+            issue.rent = rent_details
+            issue.save()
+            messages.success(request, "Saved issue report")
+            return redirect('report_issues', pk=pk)
+       
+        else:
+            print(form.errors)  # Debug form errors
+            messages.error(request, "Please Try Again")
+    else:
+        form = rent_issue_form()
+    
+    context = {
+        'page':page,
+        'title_page':title_page,
+        'users':users,
+        'rent_issues':rent_issues,
+        'form':form,
+        'rent_details':rent_details,
+        'list_issue':list_issue,
+        'total':total,
+            #list issue view modal and delete 
+    }
+    return render(request,'accounts/issues.html',context)
+
+
+@login_required(login_url='signin')
+@role_required(allowed_roles=['2'], redirect_url='admin')
+def report_issues_deleted(request,pk):
+    users = request.user
+    rent_issues = rent_issue.objects.filter(rent__renters=users)
+    delete_detail = get_object_or_404(rent_issue,pk=pk)
+    r_id = delete_detail.rent.id
+    delete_detail.delete()
+    messages.success(request, "Delete Successfully")
+    return redirect('report_issues', pk=r_id)
+   
+
+
+@login_required(login_url='signin')
+@role_required(allowed_roles=['2'], redirect_url='admin')
+def all_report_issues_deleted(request,pk):
+    users = request.user
+    rent_issues = rent_issue.objects.filter(rent__renters=users)
+    rent_details = get_object_or_404(Rented_Cars,pk=pk)
+    r_id= rent_details.rent_id
+    list_issue = rent_issue.objects.filter(rent=rent_details)
+    list_issue.delete()
+    rent_details.issues = 0
+    rent_details.save()
+    messages.success(request, "Delete all records successfully")
+    return redirect('rent_details_shop', rentid=r_id)  
 
 @login_required(login_url='signin')
 @role_required(allowed_roles=['2'], redirect_url='admin')
 def vehicles(request, slug):
     users = request.user
+    rent_issues = rent_issue.objects.filter(rent__renters=users)
     page = 'myslistshop'
     title_page = 'Vehicles'
     drivings = driver_shop.objects.filter(account=users)
@@ -1201,6 +1355,7 @@ def vehicles(request, slug):
 @role_required(allowed_roles=['2'], redirect_url='admin')
 def shopdrivers(request, slug):
     users = request.user
+    rent_issues = rent_issue.objects.filter(rent__renters=users)
     page = 'regshops'
     title_page = 'Driver Registration '
     drivings = driver_shop.objects.filter(account=users)
@@ -1246,6 +1401,7 @@ def shopdrivers(request, slug):
 @role_required(allowed_roles=['2'], redirect_url='admin')
 def edit_vehicles(request, slug, pk):
     users = request.user
+    rent_issues = rent_issue.objects.filter(rent__renters=users)
     page = 'myslistshop'
     title_page = 'Vehicles'
     drivings = driver_shop.objects.filter(account=users)
@@ -1289,6 +1445,7 @@ def edit_vehicles(request, slug, pk):
 @role_required(allowed_roles=['2'], redirect_url='admin')
 def mydrivers(request, slug):
     users = request.user
+    rent_issues = rent_issue.objects.filter(rent__renters=users)
     page = 'myslistshop'
     title_page = 'My Drivers'
     drivings = driver_shop.objects.filter(account=users)
@@ -1297,7 +1454,7 @@ def mydrivers(request, slug):
     shopID = shops.id
     garage = Vehicle.objects.filter(shop_belong=shopID)
     aply_drivers = driver_shop.objects.filter(shop_under=shops,status=0)
-    reg_drivers = driver_shop.objects.filter(shop_under=shops, status__in=[1, 2])
+    reg_drivers = driver_shop.objects.filter(shop_under=shops, status__in=[1, 2, 3, 4])
     check_driver = driver_shop.objects.filter(shop_under=shops,account=users)
     context = {
         'page': page,
@@ -1373,6 +1530,35 @@ def delete_driver(request, slug, pk):
     driver_delete.delete() 
     return redirect('mydrivers', slug=slug)
 
+@login_required(login_url='signin')
+@role_required(allowed_roles=['2'], redirect_url='admin')
+def account_lock_driver(request,pk):
+    lock_account = get_object_or_404(driver_shop, pk=pk)
+    if lock_account.status == 1:
+        lock_account.status = 3
+        message = "Lock"
+    else:
+        lock_account.status = 1
+        message = "Unlock"
+    lock_account.save()  
+    messages.success(request, "Succesfully " + message)
+    return redirect('mydrivingshops')
+
+
+@login_required(login_url='signin')
+@role_required(allowed_roles=['2'], redirect_url='admin')
+def account_removal_driver(request,pk):
+    lock_account = get_object_or_404(driver_shop, pk=pk)
+    if lock_account.status != 4:
+        lock_account.status = 4
+        message = "Removal requested"
+    else:
+        lock_account.status = 3
+        message = "Removal cancelled"
+    lock_account.save()  
+    messages.success(request, "" + message)
+    return redirect('mydrivingshops')
+
 
 
 @login_required(login_url='signin')
@@ -1395,6 +1581,7 @@ def delete_vehicles(request, slug, pk):
 @role_required(allowed_roles=['2'], redirect_url='admin')
 def shop_unit(request, slug , pk):
     users = request.user
+    rent_issues = rent_issue.objects.filter(rent__renters=users)
     cars = get_object_or_404(Vehicle, pk=pk)
     cars_name = cars.categories
     page = 'regshops'
@@ -1408,6 +1595,7 @@ def shop_unit(request, slug , pk):
         'page':page,
         'title_page':title_page,
         'users':users,
+        'rent_issues':rent_issues,
         'my_shops':my_shops, 
         'details_shop':details_shop,
         'drivings':drivings,
@@ -1423,16 +1611,20 @@ def shop_unit(request, slug , pk):
 @role_required(allowed_roles=['2'], redirect_url='admin')
 def registered_vehicles(request):
     users = request.user
+    rent_issues = rent_issue.objects.filter(rent__renters=users)
     page = 'regcars'
     title_page = 'Registered Cars'
     drivings = driver_shop.objects.filter(account=users)
     my_shops = Shops.objects.filter(owner=users)
     if request.method=="POST":
         searchbrand= request.POST.get('brand')
-        searchfuel = request.POST.get('fuel')
         searchseat = request.POST.get('seat')
         searchtransmission= request.POST.get('transmission')
-        vehicles = Vehicle.objects.filter(categories=searchbrand,fuels=searchfuel,seat=searchseat,transmission=searchtransmission).exclude(status="uncheck")
+        vehicles = Vehicle.objects.filter(
+            Q(categories=searchbrand) | 
+            Q(seat=searchseat) | 
+            Q(transmission=searchtransmission)
+        ).exclude(status="uncheck")
     else:
         vehicles = Vehicle.objects.exclude(status="uncheck")
 
@@ -1443,6 +1635,7 @@ def registered_vehicles(request):
         'page':page,
         'title_page':title_page,
         'users':users,
+        'rent_issues':rent_issues,
         'my_shops':my_shops,
         'page_obj':page_obj,
         'Brands':Brands,
@@ -1470,6 +1663,10 @@ def registered_vehicles(request):
 @role_required(allowed_roles=['2'], redirect_url='admin')
 def rent_vehicles(request, pk):
     users = request.user
+    rent_issues = rent_issue.objects.filter(rent__renters=users)
+    if rent_issues:
+        messages.error(request, "You are not authorized to rent")
+        return redirect('users')
     cars = get_object_or_404(Vehicle, pk=pk)
     rate_details = get_object_or_404(rates,pk=1)
     rate = rate_details.rates
@@ -1583,6 +1780,7 @@ def rent_vehicles(request, pk):
         'form': form,
         'current_time':current_time,
         'users':users,
+        'rent_issues':rent_issues,
         'unit':unit,
         'mth':mth,
         'yrs':yrs
@@ -1599,6 +1797,7 @@ def rent_vehicles(request, pk):
 @role_required(allowed_roles=['2'], redirect_url='admin')
 def rent_vehicles_edit(request, unit, renteid):
     users = request.user
+    rent_issues = rent_issue.objects.filter(rent__renters=users)
     cars = get_object_or_404(Vehicle, pk=unit)
     rentdetails = get_object_or_404(Rented_Cars, pk=renteid)
     current_time = now()
@@ -1674,6 +1873,7 @@ def rent_vehicles_edit(request, unit, renteid):
         'form': form,
         'current_time':current_time,
         'users':users,
+        'rent_issues':rent_issues,
     }
     
     return render(request, 'accounts/rent_cars.html', context)
@@ -1685,6 +1885,7 @@ def rent_vehicles_edit(request, unit, renteid):
 @role_required(allowed_roles=['2'], redirect_url='admin')
 def driverdetails(request,pk):
     users = request.user
+    rent_issues = rent_issue.objects.filter(rent__renters=users)
     page = ''
     title_page = 'Driver Details'
     driverdet = get_object_or_404(driver_shop,pk=pk)
@@ -1697,6 +1898,7 @@ def driverdetails(request,pk):
         'driverdet':driverdet,
         'drivings':drivings,
         'users':users,
+        'rent_issues':rent_issues,
 
     }
     return render(request, 'accounts/driverdetails.html', context)
@@ -1707,6 +1909,7 @@ def driverdetails(request,pk):
 @role_required(allowed_roles=['2'], redirect_url='admin')
 def mydrivingshops(request):
     users = request.user
+    rent_issues = rent_issue.objects.filter(rent__renters=users)
     page = 'mydrivingshops'
     title_page = 'Affiliated Shops'
     drivings = driver_shop.objects.filter(account=users)
@@ -1717,6 +1920,7 @@ def mydrivingshops(request):
         'page':page,
         'title_page':title_page,
         'users':users,
+        'rent_issues':rent_issues,
         'drivings':drivings,
         'my_shops':my_shops, 
         'drivings':drivings,
@@ -1728,6 +1932,7 @@ def mydrivingshops(request):
 @role_required(allowed_roles=['2'], redirect_url='admin')
 def mydrivingshops_details(request,pk):
     users = request.user
+    rent_issues = rent_issue.objects.filter(rent__renters=users)
     page = 'mydrivingshops'
     title_page = 'Affiliated Shops'
     drivings = driver_shop.objects.filter(account=users)
@@ -1737,6 +1942,7 @@ def mydrivingshops_details(request,pk):
         'page':page,
         'title_page':title_page,
         'users':users,
+        'rent_issues':rent_issues,
         'drivings':drivings,
         'my_shops':my_shops, 
         'drivings':drivings,
@@ -1813,6 +2019,7 @@ def cancel_rent(request,pk):
 @role_required(allowed_roles=['2'], redirect_url='admin')
 def rent_details(request,rentid):
     users = request.user
+    rent_issues = rent_issue.objects.filter(rent__renters=users)
     page = 'homedashboard'
     title_page = 'Prime Cars'
     drivings = driver_shop.objects.filter(account=users)
@@ -1820,6 +2027,7 @@ def rent_details(request,rentid):
     registred_shops = Shops.objects.filter(status="published")[:12]
     cars = get_object_or_404(Rented_Cars,rent_id=rentid)
     proofs = onsitepayment.objects.filter(rent_reference=cars)
+    list_of_damages = rent_issue.objects.filter(rent=cars)
 
     if request.method == 'POST':
         form = onsite_pay(request.POST, request.FILES)
@@ -1848,6 +2056,7 @@ def rent_details(request,rentid):
         'page':page,
         'title_page':title_page,
         'users':users,
+        'rent_issues':rent_issues,
         'my_shops':my_shops, 
         'registred_shops':registred_shops,
         'cars':cars,
@@ -1855,7 +2064,8 @@ def rent_details(request,rentid):
         'form':form,
         'proofs':proofs,
         'rev':rev,
-        'stars': range(cars.rating_star) 
+        'stars': range(cars.rating_star),
+        'list_of_damages':list_of_damages,
     }
     return render(request, 'accounts/rent_details.html',context)
 
@@ -1943,7 +2153,7 @@ def recieved_garage(request, pk):
     apr.return_garage = current_time
     apr.unit_release = 1
     apr.rating_bolean = 1
-    apr.transaction_done = 1
+    apr.transaction_done = 1 #balik
     apr.save()
     messages.success(request, "Returning Successfully")
     return redirect('rent_details_shop', rentid=apr.rent_id)

@@ -3,6 +3,12 @@
     <a class="sidebar-toggle js-sidebar-toggle">
           <i class="hamburger align-self-center"></i>
     </a>
+    {% if rent_issues %}
+        <div class="alert alert-danger" role="alert">
+            Your Account is block to some rent functions,
+            please fix your rent issues.
+        </div> 
+    {% endif %}
     <div class="navbar-collapse collapse">
         <ul class="navbar-nav navbar-align">
             

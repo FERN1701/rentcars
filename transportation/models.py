@@ -225,7 +225,7 @@ class driver_shop(models.Model):
     status = models.IntegerField(default=0)
 
     def __str__(self):
-        return self.account.fname
+        return self.account.fname +" "+ self.account.lname
 
 
 
@@ -283,6 +283,9 @@ class Rented_Cars(models.Model):
     rating_bolean = models.IntegerField(default=0)
     rating_star = models.IntegerField(default=0,choices=rate_num)
     rating_reviews = models.TextField(null=True)
+    #issues
+    issues = models.IntegerField(default=0)
+    total_cost_issue = models.IntegerField(default=0)
 
     def save(self, *args, **kwargs):
         # Generate a unique RENTID if not already set
@@ -342,7 +345,11 @@ class payment_process_items(models.Model):
     rent_transactions = models.ForeignKey("Rented_Cars", verbose_name=("renttransaction"), on_delete=models.SET_NULL, null=True)
     
 
-
+class rent_issue(models.Model):
+    rent = models.ForeignKey("Rented_Cars", verbose_name=("Rent cars issue"), on_delete=models.CASCADE)
+    issue_name = models.CharField(max_length=150)
+    issue_details = models.TextField()
+    issue_amount = models.IntegerField(default=500)
 
     
     

@@ -2,6 +2,7 @@ from django.forms import ModelForm
 from django.contrib.auth.forms import UserCreationForm
 from .models import *
 from django import forms
+from django.db.models import Q
 
 class MyUserCreationForm(UserCreationForm):
     class Meta:
@@ -101,6 +102,9 @@ class Rented_CarsForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(Rented_CarsForm, self).__init__(*args, **kwargs)
+        # Filter driver_shop to exclude those with status = 2
+        #self.fields['driver_shp'].queryset = driver_shop.objects.exclude(Q(status=2)|Q(status=0))
+        self.fields['driver_shp'].queryset = driver_shop.objects.filter(status=1)
         self.fields['driver_shp'].required = False  # Make driver_shp optional
 
 
@@ -133,5 +137,15 @@ class ratings_review_form(ModelForm):
         widgets = {
             'rating_star': forms.Select(attrs={'class': 'form-control'}),
             'rating_reviews': forms.Textarea(attrs={'class': 'form-control'}),
+}
+
+class rent_issue_form(ModelForm):
+    class Meta:
+        model = rent_issue
+        fields = ['issue_name','issue_details','issue_amount']
+        widgets = {
+            'issue_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'issue_details': forms.Textarea(attrs={'class': 'form-control'}),
+            'issue_amount': forms.NumberInput(attrs={'class': 'form-control'}),
 }
 

@@ -144,10 +144,10 @@
                         </thead>
                         <tbody>
                           {% for drivers in reg_drivers %}
-                            <tr>
+                            <tr class="{% if drivers.status == 4 %}bg-warning text-dark{% endif %}">
                                   <td>{{drivers.account.fname}} {{drivers.account.lname}}</td>
                                   <td>{{drivers.date_registered}}</td>
-                                  <td>{% if drivers.status == 1 %}Deployed{% else %}Dismissed{% endif %}</td>
+                                  <td>{% if drivers.status == 1 %}Deployed {% elif drivers.status == 4 %}requesting removal{% else %}Dismissed{% endif %}</td>
                                   <td>
                                       <a href="" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#cardetail{{drivers.id}}">View Details</a>
                                   </td>
@@ -158,7 +158,7 @@
                 </div>
                 {% for dri in reg_drivers %}
                                     <div class="modal fade" id="cardetail{{dri.id}}" tabindex="-1" aria-labelledby="cardetailLabel" aria-hidden="true">
-                                        <div class="modal-dialog">
+                                        <div class="modal-dialog modal-xl">
                                           <div class="modal-content">
                                             <div class="modal-header">
                                               <h1 class="modal-title fs-5" id="cardetailLabel">Drivers Details</h1>
@@ -204,9 +204,14 @@
                                             <div class="modal-footer">
                                               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                                               {% if dri.status == 1 %}
-                                                <a href="{% url 'approved_driver' slug=slug pk=dri.id  %}" class="btn btn-secondary">Dismissed this driver</a>
+                                                <a href="{% url 'approved_driver' slug=slug pk=dri.id  %}" class="btn btn-danger">Dismissed</a>
+                                                <a href="{% url 'approved_driver' slug=slug pk=dri.id  %}" class="btn btn-danger">Delete</a>
+                                                
                                               {% else %}
-                                                <a href="{% url 'approved_driver' slug=slug pk=dri.id  %}" class="btn btn-danger">Deploy this driver</a>
+                                                {% if dri.status == 4 %}
+                                                  <a href="{% url 'delete_driver' slug=slug pk=dri.id  %}" class="btn btn-danger">Approve Removal</a>
+                                                {% endif %}
+                                                <a href="{% url 'approved_driver' slug=slug pk=dri.id  %}" class="btn btn-success">Deploy this driver</a>
                                               {% endif %}
                                              
                                             </div>

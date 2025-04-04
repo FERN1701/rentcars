@@ -4,6 +4,23 @@
 <!DOCTYPE html>
 <html lang="en">
 {% include 'accounts/head.html' %}
+
+<style>
+  .pulse {
+    width: 22.4px;
+    height: 22.4px;
+     border-radius: 50%;
+     background: #1d20db;
+     box-shadow: 0 0 0 0 rgba(29,32,219,0.5);
+     animation: pulse-c6zlskmn 0.6s infinite;
+  }
+  
+  @keyframes pulse-c6zlskmn {
+     100% {
+        box-shadow: 0 0 0 14.4px #0000;
+     }
+  }
+  </style>
 <body>
 	<script>
 		{% for m in messages  %}
@@ -42,9 +59,11 @@
 						<div class="col-12">
 							<div class="card">
 								<div class="card-header">
-									<h4 class="card-title mb-0">Rent Details : {{cars.rent_id}} <br>
-                    {% if cars.unit_release == 1 %}<p class="text-secondary">Garage Status :  Inside Garage</p> {% elif cars.unit_release == 2 %} <p class="text-danger">Garage Status : Outside garage</p> {% endif %} <br>
-                    {% if cars.out_garage != Null %}{{cars.out_garage}}{% endif %}</h4>
+									<h3 class="">
+                    
+                    Rent Details : {{cars.rent_id}} <br>
+                    {% if cars.unit_release == 1 %}<p class="text-secondary">Garage Status :  Inside Garage</p> {% elif cars.unit_release == 2 %} <div class="d-flex"><div class="pulse "></div> <p class="text-danger"> Garage Status : Outside garage</p></div> {% endif %} <br>
+                    {% if cars.out_garage != Null %}{{cars.out_garage}}{% endif %}</h3>
 								</div>
 								<div class="card-body">
                                     <div class="row">
@@ -148,7 +167,14 @@
                                                           <td colspan="3">Payment Choices : {% if cars.payment_choice == 1 %}Onsite @ {{cars.unit_rented.shop_belong.shop_name}}{% else %}Online{% endif %}</td>
                                                           
                                                         </tr>
-
+                                                        {% if cars.issues == 1 %}
+                                                        <tr class="bg-danger">
+                                                          <td class="text-light">Damage Cost: {{cars.execes_hrs}}hrs</td>
+                                                          <td  class="text-light" colspan="2">Cost : ₱{{ cars.total_cost_issue|floatformat:2|intcomma }}</td>
+                                                          <td> <a href="" class="btn btn-light" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal">damages</a></td>
+                                                        </tr>
+                                                        {% endif %}
+                                                        
                                                         {% if cars.excess_exist == 1 %}
                                                           <tr class="bg-warning">
                                                             <td>Excess Hrs: {{cars.execes_hrs}}hrs</td>
@@ -196,6 +222,33 @@
                                       <a href="{% url 'return_garage' pk=cars.id %}" class="btn btn-danger">Returning Unit</a>		
                                     {% endif %}
                                     <a href="{% url 'users'  %}" class="btn btn-secondary">back</a>		
+                                </div>
+
+                                <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable ">
+                                    <div class="modal-content">
+                                      <div class="modal-header">
+                                        <h1 class="modal-title fs-5" id="exampleModalLabel">List of rental damages</h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                      </div>
+                                      <div class="modal-body">
+                                        {% for damages  in list_of_damages %}
+                                          <div class="card">
+                                            <div class="card-header">
+                                              <div class="d-flex justify-content-between"><h6>{{damages.issue_name}}</h6> <h6>{{damages.issue_amount}}</h6></div>
+                                            </div>
+                                            <div class="card-body">
+                                              {{damages.issue_details}}
+                                            </div>
+                                          </div>
+                                        {% endfor %}
+                                      </div>
+                                      <div class="modal-footer">
+                                        <p>Note:Pay at the counter.</p>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                      </div>
+                                    </div>
+                                  </div>
                                 </div>
 							</div>
 						</div>

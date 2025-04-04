@@ -61,6 +61,9 @@ urlpatterns = [
 
 
     path('myshop/rent/<str:rentid>/', views.rent_details_shop, name='rent_details_shop'),
+    path('myshop/rent/<int:pk>/issues/', views.report_issues, name='report_issues'),
+    path('myshop/rent/<int:pk>/issues/deleted/', views.report_issues_deleted, name='report_issues_deleted'),
+    path('myshop/rent/<int:pk>/issues/all/deleted/', views.all_report_issues_deleted, name='all_report_issues_deleted'),
     path('myshop/rent/admin/<str:rentid>/', views.rent_details_shop_admin, name='rent_details_shop_admin'),
     path('myshop/vehicles/<slug:slug>/', views.vehicles, name='vehicles'),
     path('myshop/<slug:slug>/vehicles/edit/<int:pk>/', views.edit_vehicles, name='edit_vehicles'),
@@ -84,6 +87,8 @@ urlpatterns = [
 
     path('driver/details/<int:pk>/', views.driverdetails, name='driverdetails'),
     path('shop/mydrive/', views.mydrivingshops, name='mydrivingshops'),
+    path('shop/mydrive/<int:pk>/lock/', views.account_lock_driver, name='account_lock_driver'),
+    path('shop/mydrive/<int:pk>/removal/', views.account_removal_driver, name='account_removal_driver'),
     path('shop/mydrive/appointment/<int:pk>/', views.mydrivingshops_details, name='mydrivingshops_details'),
     path('shop/mydrive/appointment/<int:pk>/approved/', views.approve_driver_appointment, name='approve_driver_appointment'),
     path('shop/mydrive/appointment/<int:pk>/denied/', views.denied_driver_appointment, name='denied_driver_appointment'),
